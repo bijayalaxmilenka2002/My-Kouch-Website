@@ -144,10 +144,22 @@ export default function AutoPlayCarousel({
     }
   };
 
-  if (loading) {
+  if (loading && uniqueList.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-        {emptyMessage}
+      <div className="carousel-skeleton-wrap" style={{ display: 'flex', gap: '1.5rem', overflow: 'hidden', padding: '1rem 0' }}>
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              flex: '0 0 320px',
+              height: '380px',
+              borderRadius: 'var(--radius-lg)',
+              background: 'linear-gradient(90deg, #F5EFE6 0%, #EFE8DD 50%, #F5EFE6 100%)',
+              backgroundSize: '200% 100%',
+              animation: 'shimmer 1.5s infinite',
+            }}
+          />
+        ))}
       </div>
     );
   }

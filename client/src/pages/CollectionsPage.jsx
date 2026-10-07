@@ -24,10 +24,12 @@ const seatingCapacities = [
   'Single Recliner',
 ];
 
+import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
+
 export default function CollectionsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(FALLBACK_PRODUCTS);
+  const [loading, setLoading] = useState(false);
 
   // URL params
   const activeFilter = searchParams.get('filter') || '';

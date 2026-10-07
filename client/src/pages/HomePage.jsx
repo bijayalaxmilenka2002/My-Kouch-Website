@@ -10,24 +10,24 @@ import TestimonialsSection from '../components/TestimonialsSection';
 import AboutSection from '../components/AboutSection';
 import { getProducts, getActiveOffer, getTestimonials } from '../services/api';
 import SEO from '../components/SEO';
+import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
 export default function HomePage() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(FALLBACK_PRODUCTS);
   const [activeOffer, setActiveOffer] = useState(null);
   const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadHomeData = async () => {
       try {
-        setLoading(true);
         const [prodRes, offerRes, testRes] = await Promise.all([
-          getProducts({ isActive: 'true' }),
+          getProducts({ isActive: 'true' }).catch(() => null),
           getActiveOffer().catch(() => ({ offer: null })),
           getTestimonials().catch(() => ({ testimonials: [] })),
         ]);
 
-        if (prodRes?.products) {
+        if (prodRes?.products && prodRes.products.length > 0) {
           setProducts(prodRes.products);
         }
         if (offerRes?.offer) {

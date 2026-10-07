@@ -417,27 +417,29 @@ export default function OwnerDashboardPage() {
           </div>
 
           <div className="dashboard-header-actions">
-            <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+            <span className="dashboard-user-info">
               Logged in as: <strong>{owner?.email || 'admin@mykouch.in'}</strong>
             </span>
-            <Link
-              to="/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-light btn-sm"
-              title="Open public website in new tab"
-            >
-              <span>View Website</span>
-              <ExternalLink size={14} />
-            </Link>
-            <button
-              onClick={logout}
-              className="btn btn-outline btn-sm"
-              title="Logout from owner session"
-            >
-              <LogOut size={14} />
-              <span>Logout</span>
-            </button>
+            <div className="dashboard-header-btns">
+              <Link
+                to="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-light btn-sm"
+                title="Open public website in new tab"
+              >
+                <span>View Website</span>
+                <ExternalLink size={14} />
+              </Link>
+              <button
+                onClick={logout}
+                className="btn btn-outline btn-sm"
+                title="Logout from owner session"
+              >
+                <LogOut size={14} />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -792,20 +794,11 @@ export default function OwnerDashboardPage() {
               {filteredEnquiries.map((enq) => {
                 const details = enq.customizationDetails || {};
                 return (
-                  <div
-                    key={enq._id}
-                    style={{
-                      background: '#FFFFFF',
-                      borderRadius: 'var(--radius-md)',
-                      padding: '1.5rem',
-                      border: '1px solid var(--border-subtle)',
-                      boxShadow: 'var(--shadow-xs)',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-                          <h3 style={{ fontSize: '1.2rem', color: 'var(--color-espresso)' }}>
+                  <div key={enq._id} className="dashboard-enquiry-card">
+                    <div className="enquiry-card-header">
+                      <div className="enquiry-card-user-info">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
+                          <h3 style={{ fontSize: '1.2rem', color: 'var(--color-espresso)', margin: 0 }}>
                             {enq.customerName}
                           </h3>
                           <span
@@ -831,7 +824,7 @@ export default function OwnerDashboardPage() {
                       </div>
 
                       {/* Status Selector Dropdown */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div className="enquiry-card-status-ctrl">
                         <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Status:</span>
                         <select
                           value={enq.status}
@@ -854,7 +847,7 @@ export default function OwnerDashboardPage() {
                     </div>
 
                     {/* Customer Contact Links */}
-                    <div style={{ display: 'flex', gap: '1.25rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                    <div className="enquiry-contact-links">
                       <a
                         href={`tel:${enq.phone}`}
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-primary)', fontSize: '0.88rem', fontWeight: 600 }}
@@ -884,7 +877,7 @@ export default function OwnerDashboardPage() {
 
                     {/* Customization Details Grid */}
                     {(details.sofaType || details.preferredSize || details.fabricPreference || details.preferredColor) && (
-                      <div style={{ background: 'var(--bg-sand-light)', padding: '1rem', borderRadius: 'var(--radius-sm)', marginBottom: '0.75rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', fontSize: '0.84rem' }}>
+                      <div className="enquiry-details-grid">
                         {details.sofaType && (
                           <div>
                             <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.75rem' }}>Sofa Type:</span>
@@ -925,7 +918,7 @@ export default function OwnerDashboardPage() {
                     )}
 
                     {enq.message && (
-                      <p style={{ fontSize: '0.9rem', color: 'var(--color-espresso)', background: '#FAF8F5', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', margin: 0, fontStyle: 'italic' }}>
+                      <p className="enquiry-message-box">
                         "{enq.message}"
                       </p>
                     )}
@@ -1124,7 +1117,7 @@ export default function OwnerDashboardPage() {
                 </label>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <div className="dashboard-modal-actions">
                 <button type="button" onClick={() => setIsProductModalOpen(false)} className="btn btn-light">
                   Cancel
                 </button>
@@ -1222,7 +1215,7 @@ export default function OwnerDashboardPage() {
                 </label>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1.5rem' }}>
+              <div className="dashboard-modal-actions">
                 <button type="button" onClick={() => setIsOfferModalOpen(false)} className="btn btn-light">
                   Cancel
                 </button>
