@@ -3,6 +3,28 @@
 > **"Comfort That Feels Like Home"**  
 > Premium bespoke sofas, velvet L-shaped sectionals, 3+1+1 living room suites, and motorized recliners handcrafted directly at our factory in Bhubaneswar, Odisha.
 
+[![Frontend](https://img.shields.io/badge/Frontend-Vercel-black?style=for-the-badge&logo=vercel)](https://my-kouch-website.vercel.app)
+[![Backend](https://img.shields.io/badge/Backend-Render-46e3b7?style=for-the-badge&logo=render)](https://mykouch-backend.onrender.com)
+[![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas-47a248?style=for-the-badge&logo=mongodb)](https://cloud.mongodb.com)
+[![Status](https://img.shields.io/badge/Status-Live%20%26%20Operational-brightgreen?style=for-the-badge)](https://my-kouch-website.vercel.app)
+
+---
+
+## 🌐 Live Deployments & Official Links
+
+| Resource | Live URL | Description |
+| :--- | :--- | :--- |
+| 🛋️ **Customer Website** | **[https://my-kouch-website.vercel.app](https://my-kouch-website.vercel.app)** | Official live luxury sofa catalog & custom builder |
+| 🔐 **Owner Management Portal** | **[https://my-kouch-website.vercel.app/owner/login](https://my-kouch-website.vercel.app/owner/login)** | Admin dashboard for inventory, offers & customer leads |
+| ⚡ **Backend REST API** | **[https://mykouch-backend.onrender.com](https://mykouch-backend.onrender.com)** | Node.js / Express REST API deployed on Render |
+| 🩺 **API Health Check** | **[https://mykouch-backend.onrender.com/api/health](https://mykouch-backend.onrender.com/api/health)** | Live server uptime & database health check |
+| 📦 **GitHub Repository** | **[bijayalaxmilenka2002/My-Kouch-Website](https://github.com/bijayalaxmilenka2002/My-Kouch-Website)** | Complete source code repository |
+
+### 🔑 Owner Portal Credentials:
+- **Login URL**: [https://my-kouch-website.vercel.app/owner/login](https://my-kouch-website.vercel.app/owner/login)
+- **Email**: `admin@mykouch.in`
+- **Password**: `MyKouch@2026`
+
 ---
 
 ## 🌟 Overview
@@ -96,7 +118,7 @@ My-Kouch-Website/
 │   └── server.js               # Express entrypoint & CORS configuration
 │
 ├── .gitignore                  # Git ignore rules (node_modules, .env, dist)
-└── README.md                   # Project documentation
+└── README.md                   # Project documentation with live deployment links
 ```
 
 ---
@@ -147,7 +169,7 @@ cd client
 npm install
 ```
 
-Create a `.env` file in `client/` (optional for local dev, uses Vite proxy by default):
+Create a `.env` file in `client/` (refer to `client/.env.example`):
 ```env
 VITE_API_URL=http://localhost:5000
 ```
@@ -160,49 +182,27 @@ npm run dev
 
 ---
 
-## 🚢 Deployment Guide
+## 🚢 Deployment Configuration Summary
 
-### A. Deploy Backend to Render
+- **Frontend (Vercel)**:
+  - Repository: `bijayalaxmilenka2002/My-Kouch-Website`
+  - Root Directory: `client`
+  - Build Command: `npm run build`
+  - Output Directory: `dist`
+  - Environment Variable: `VITE_API_URL=https://mykouch-backend.onrender.com`
+  - Live URL: **`https://my-kouch-website.vercel.app`**
 
-1. Go to [Render Dashboard](https://dashboard.render.com/) and click **New +** → **Web Service**.
-2. Connect your GitHub repository: `bijayalaxmilenka2002/My-Kouch-Website`.
-3. Configure service settings:
-   - **Name**: `mykouch-backend` (or your preferred name)
-   - **Region**: Singapore or Frankfurt (choose closest to India)
-   - **Root Directory**: `server`
-   - **Runtime**: `Node`
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-4. Add **Environment Variables** in Render:
-   - `PORT`: `5000` (or leave default, Render sets this automatically)
-   - `MONGODB_URI`: `mongodb+srv://<username>:<password>@cluster0.mongodb.net/mykouch?retryWrites=true&w=majority`
-   - `JWT_SECRET`: `your_secure_jwt_secret_key`
-   - `NODE_ENV`: `production`
-5. Click **Create Web Service**.
-6. Once deployed, copy your Render service URL:  
-   `https://mykouch-backend.onrender.com`
+- **Backend (Render)**:
+  - Repository: `bijayalaxmilenka2002/My-Kouch-Website`
+  - Root Directory: `server`
+  - Build Command: `npm install`
+  - Start Command: `npm start`
+  - Environment Variables: `PORT=5000`, `MONGODB_URI=...`, `JWT_SECRET=...`, `NODE_ENV=production`
+  - Live URL: **`https://mykouch-backend.onrender.com`**
 
 ---
 
-### B. Deploy Frontend to Vercel
-
-1. Go to [Vercel Dashboard](https://vercel.com/) and click **Add New...** → **Project**.
-2. Import repository `bijayalaxmilenka2002/My-Kouch-Website`.
-3. In the project configuration:
-   - **Framework Preset**: `Vite`
-   - **Root Directory**: Click *Edit* and select `client`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-4. Add **Environment Variable** in Vercel:
-   - **Name**: `VITE_API_URL`
-   - **Value**: `https://mykouch-backend.onrender.com` *(your Render backend URL)*
-5. Click **Deploy**.
-6. Vercel will build and assign a production URL (e.g. `https://my-kouch-website.vercel.app`).
-7. *(Optional)* Update `CLIENT_URL` in your Render backend settings to your new Vercel domain to lock down CORS.
-
----
-
-## 📍 Contact & Showroom Locations
+## 📍 Showroom & Factory Details
 
 - **Showroom**: MB Maaarketing, AM42, Bhimatangi, Near Amabus Stop, Bhubaneswar, Odisha - 751002
 - **Factory**: MB Maaarketing Factory, Plot No-401, Jagannath Bihar, Sunderipada, Bhubaneswar - 751002
