@@ -9,8 +9,8 @@ export default function TopSellingSection({ products = [], loading = false }) {
   return (
     <section className="section-padding" style={{ background: '#FFFFFF' }}>
       <div className="container">
-        <div className="reveal-on-scroll" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
+        <div className="section-header-split reveal-on-scroll">
+          <div className="section-header-split-text">
             <span className="section-tag">
               <Sparkles size={14} />
               <span>Customer Favorites</span>

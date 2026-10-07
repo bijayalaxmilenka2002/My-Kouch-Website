@@ -29,7 +29,7 @@
 
 ## 🌟 Overview
 
-**myKouch** (by *MB Maaarketing*) is a factory-direct luxury sofa manufacturer and showroom platform. Built from the ground up for discerning homeowners and interior designers, myKouch eliminates distributor markups by building custom living room seating directly in Sunderipada, Bhubaneswar with treated seasoned Sal wood frames, 40-density high-resilience foam, and 100+ imported luxury fabrics.
+**myKouch** (by *MB Marketing*) is a factory-direct luxury sofa manufacturer and showroom platform. Built from the ground up for discerning homeowners and interior designers, myKouch eliminates distributor markups by building custom living room seating directly in Sunderipada, Bhubaneswar with treated seasoned Sal wood frames, 40-density high-resilience foam, and 100+ imported luxury fabrics.
 
 ---
 
@@ -204,12 +204,12 @@ npm run dev
 
 ## 📍 Showroom & Factory Details
 
-- **Showroom**: MB Maaarketing, AM42, Bhimatangi, Near Amabus Stop, Bhubaneswar, Odisha - 751002
-- **Factory**: MB Maaarketing Factory, Plot No-401, Jagannath Bihar, Sunderipada, Bhubaneswar - 751002
+- **Showroom**: MB Marketing, AM42, Bhimatangi, Near Mo Bus Stop, Bhubaneswar, Odisha - 751002
+- **Factory**: MB Marketing Factory, Plot No-401, Jagannath Bihar, Sunderipada, Bhubaneswar - 751002
 - **Direct Phone / WhatsApp**: +91 80933 76990
 - **Hours**: Mon – Sun: 10:00 AM – 9:00 PM
 
 ---
 
 ## 📄 License
-Private & Proprietary © 2026 myKouch™ / MB Maaarketing. All rights reserved.
+Private & Proprietary © 2026 myKouch™ / MB Marketing. All rights reserved.

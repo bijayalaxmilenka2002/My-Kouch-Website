@@ -132,12 +132,17 @@ export default function CustomSofaModal() {
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="modal-header">
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-primary)', fontSize: '0.74rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-              <Sliders size={13} />
-              <span>Bespoke Workshop</span>
+          <div className="modal-header-text">
+            <div className="modal-badge-row">
+              <span className="modal-section-badge">
+                <Sliders size={12} />
+                <span>BESPOKE WORKSHOP</span>
+              </span>
             </div>
             <h2 className="modal-title">Customize Your Sofa</h2>
+            <p className="modal-subtitle">
+              Choose your custom dimensions, preferred fabrics, and foam firmness.
+            </p>
           </div>
           <button
             onClick={closeCustomizeModal}

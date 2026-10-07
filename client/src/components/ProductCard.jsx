@@ -5,7 +5,7 @@ import { useSofa } from '../context/SofaContext';
 import { getImageUrl } from '../services/api';
 
 export default function ProductCard({ product }) {
-  const { openCustomizeModal } = useSofa();
+  const { openCustomizeModal, openEnquiryModal } = useSofa();
 
   // Primary image
   const displayImage = product.images && product.images.length > 0
@@ -105,14 +105,15 @@ export default function ProductCard({ product }) {
             to={`/product/${product._id || product.slug}`}
             className="btn btn-light btn-sm"
           >
-            <span>View Details</span>
+            <span>Details</span>
           </Link>
           <button
-            onClick={() => openCustomizeModal(product)}
+            onClick={() => openEnquiryModal(product)}
             className="btn btn-primary btn-sm"
+            title="Instant Sofa Enquiry"
           >
-            <Sliders size={14} />
-            <span>Customize</span>
+            <MessageSquare size={13} />
+            <span>Enquire</span>
           </button>
         </div>
       </div>

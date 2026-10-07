@@ -17,7 +17,7 @@ export default function AboutPage() {
         {/* Header */}
         <div className="section-header" style={{ maxWidth: '800px', marginBottom: '4rem' }}>
           <span className="section-tag">
-            <span>MB Maaarketing • Est. Bhubaneswar</span>
+            <span>MB Marketing • Est. Bhubaneswar</span>
           </span>
           <h1 className="section-title" style={{ fontSize: '3rem' }}>
             Crafting Comfort. Designing Lifestyle.
@@ -80,7 +80,7 @@ export default function AboutPage() {
               Our Three Guiding Pillars
             </h3>
             <p style={{ color: 'var(--text-muted)' }}>
-              Identified directly from our founding company values at MB Maaarketing.
+              Identified directly from our founding company values at MB Marketing.
             </p>
           </div>
 
@@ -131,10 +131,10 @@ export default function AboutPage() {
               <span>Shop &amp; Showroom Location</span>
             </div>
             <h4 style={{ fontSize: '1.15rem', color: 'var(--color-espresso)', marginBottom: '0.75rem' }}>
-              MB Maaarketing Showroom
+              MB Marketing Showroom
             </h4>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>
-              AM42, Bhimatangi, Near Amabus Stop,
+              AM42, Bhimatangi, Near Mo Bus Stop,
               <br />
               Bhubaneswar, Odisha - Pin 751002
             </p>
@@ -146,12 +146,12 @@ export default function AboutPage() {
               <span>Manufacturing Factory Location</span>
             </div>
             <h4 style={{ fontSize: '1.15rem', color: 'var(--color-espresso)', marginBottom: '0.75rem' }}>
-              MB Maaarketing Factory
+              MB Marketing Factory
             </h4>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>
               Jagannath Bihar, Plot No- 401, Sunderipada,
               <br />
-              Near Champati Petrol Pump, Bhubaneswar, Dist- Khordha - Pin 751002
+              Near Champati Petrol Pump, Bhubaneswar, Dist. Khordha - Pin 751002
             </p>
           </div>
         </div>

@@ -35,7 +35,7 @@ export default function AboutSection() {
             <h2>Crafting Comfort. Designing Lifestyle.</h2>
 
             <p>
-              Under MB Maaarketing, <strong>myKouch</strong> was founded on a simple conviction: the living room is where life unfolds. You shouldn't have to compromise with mass-market sizes or flimsy particle boards when seeking true comfort.
+              Under MB Marketing, <strong>myKouch</strong> was founded on a simple conviction: the living room is where life unfolds. You shouldn't have to compromise with mass-market sizes or flimsy particle boards when seeking true comfort.
             </p>
 
             <p>

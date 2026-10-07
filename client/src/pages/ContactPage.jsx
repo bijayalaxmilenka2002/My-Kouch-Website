@@ -209,10 +209,10 @@ export default function ContactPage() {
                 <span>Shop &amp; Showroom</span>
               </div>
               <h3 style={{ fontSize: '1.2rem', color: 'var(--color-espresso)', marginBottom: '0.5rem' }}>
-                MB Maaarketing Showroom
+                MB Marketing Showroom
               </h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '1rem' }}>
-                AM42, Bhimatangi, Near Amabus Stop,
+                AM42, Bhimatangi, Near Mo Bus Stop,
                 <br />
                 Bhubaneswar, Odisha - 751002
               </p>
@@ -229,12 +229,12 @@ export default function ContactPage() {
                 <span>Manufacturing Factory</span>
               </div>
               <h3 style={{ fontSize: '1.2rem', color: 'var(--color-espresso)', marginBottom: '0.5rem' }}>
-                MB Maaarketing Factory
+                MB Marketing Factory
               </h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '1rem' }}>
                 Jagannath Bihar, Plot No- 401, Sunderipada,
                 <br />
-                Near Champati Petrol Pump, Bhubaneswar, Dist- Khordha - 751002
+                Near Champati Petrol Pump, Bhubaneswar, Dist. Khordha - 751002
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                 <Clock size={16} />

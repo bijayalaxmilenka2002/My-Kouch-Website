@@ -6,9 +6,9 @@ export default function OfferBanner({ offer }) {
   const [copied, setCopied] = useState(false);
 
   const fallbackOffer = {
-    title: 'Durga Pooja Offer',
+    title: 'Durga Puja & Festive Offers',
     subtitle: 'Exclusive Factory-Direct Pricing & Free Consultation',
-    description: 'On Durga Pooja Celebrate With My Kouch',
+    description: 'Celebrate Festive Luxury with myKouch Factory Direct Sofas',
     discount: 'UP TO 45% OFF',
     couponCode: 'COMFORT35',
     ctaText: 'Explore Sofa Offers',

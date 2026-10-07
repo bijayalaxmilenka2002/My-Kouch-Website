@@ -115,17 +115,17 @@ export default function EnquiryContactModal() {
       >
         {/* Modal Header */}
         <div className="modal-header">
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.2rem' }}>
-              <span className="modal-section-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+          <div className="modal-header-text">
+            <div className="modal-badge-row">
+              <span className="modal-section-badge">
                 <Sparkles size={11} />
                 <span>CUSTOMER DESK &amp; SHOWROOM</span>
               </span>
             </div>
-            <h2 className="modal-title" style={{ margin: 0 }}>
+            <h2 className="modal-title">
               Enquiry &amp; Contact
             </h2>
-            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.86rem', color: 'var(--text-secondary)' }}>
+            <p className="modal-subtitle">
               Get factory-direct pricing, fabric swatches, or schedule a showroom visit in Bhubaneswar.
             </p>
           </div>
@@ -367,33 +367,13 @@ export default function EnquiryContactModal() {
                 </div>
 
                 {/* Showroom Address Note */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    fontSize: '0.8rem',
-                    color: 'var(--text-secondary)',
-                    marginBottom: '1.25rem',
-                    background: 'var(--bg-light, #FAFAFA)',
-                    padding: '0.65rem 0.85rem',
-                    borderRadius: 'var(--radius-sm, 6px)',
-                  }}
-                >
+                <div className="modal-showroom-note">
                   <MapPin size={15} color="var(--color-primary)" />
-                  <span>Workshop &amp; Showroom: Rasulgarh / Cuttack Road, Bhubaneswar, Odisha</span>
+                  <span>MB Marketing Showroom: AM42 Bhimatangi (Near Mo Bus Stop) • Factory: Sunderipada, Bhubaneswar</span>
                 </div>
 
                 {/* Action Buttons */}
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    gap: '0.75rem',
-                    paddingTop: '0.75rem',
-                    borderTop: '1px solid var(--border-light, #E8DFD5)',
-                  }}
-                >
+                <div className="modal-action-btns-row">
                   <button
                     type="button"
                     onClick={closeEnquiryModal}
@@ -406,7 +386,7 @@ export default function EnquiryContactModal() {
                     type="submit"
                     className="btn btn-primary"
                     disabled={loading}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}
                   >
                     <Send size={15} />
                     <span>{loading ? 'Submitting...' : 'Submit Enquiry'}</span>

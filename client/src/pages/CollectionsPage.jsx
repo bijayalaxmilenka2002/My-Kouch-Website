@@ -138,15 +138,15 @@ export default function CollectionsPage() {
       />
       <div className="container">
         {/* Page Title & Breadcrumb */}
-        <div style={{ marginBottom: '2.5rem' }}>
+        <div className="collections-header-block">
           <span className="section-tag" style={activeFilter === 'new-arrivals' ? { background: '#DCFCE7', color: '#15803D', borderColor: '#BBF7D0' } : {}}>
             <Sparkles size={14} />
             <span>{pageTag}</span>
           </span>
-          <h1 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: 'var(--color-espresso)', marginBottom: '0.5rem' }}>
+          <h1 className="collections-page-title">
             {pageTitle}
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '680px' }}>
+          <p className="collections-page-subtitle">
             {pageSubtitle}
           </p>
         </div>
