@@ -344,6 +344,44 @@
   }
 }
 
+@media (max-width: 640px) {
+  .site-header .nav-container {
+    height: 64px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    gap: 0.5rem;
+  }
+  .btn-enquire-nav {
+    display: none !important;
+  }
+  .nav-actions {
+    gap: 0.5rem;
+  }
+  .mobile-drawer {
+    width: 86%;
+    max-width: 320px;
+    padding: 1.5rem 1.25rem;
+  }
+  .mobile-drawer-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-logo-mark {
+    height: 32px;
+  }
+  .nav-logo-tagline {
+    font-size: 0.46rem;
+    letter-spacing: 0.12em;
+    padding-left: 0.12em;
+  }
+  .mobile-menu-btn {
+    padding: 0.35rem;
+  }
+}
+
 /* ========================================================
    HERO SECTION
    ======================================================== */
@@ -556,16 +594,40 @@
 
 @media (max-width: 640px) {
   .hero-section {
-    padding: 2.25rem 0 3.5rem;
+    padding: 2rem 0 3rem;
   }
   .hero-headline {
-    font-size: 2.1rem;
+    font-size: 1.95rem;
+    line-height: 1.22;
+  }
+  .hero-description {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
   }
   .hero-floating-badge {
-    bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
-    padding: 0.75rem 1rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    gap: 0.65rem;
+  }
+  .badge-icon-box {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .badge-info-title {
+    font-size: 0.82rem;
+  }
+  .badge-info-subtitle {
+    font-size: 0.72rem;
+  }
+  .hero-warranty-badge {
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.72rem;
   }
   .hero-cta-group {
     flex-direction: column;
@@ -574,6 +636,13 @@
   }
   .hero-cta-group .btn {
     width: 100%;
+  }
+  .hero-trust-row {
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+  }
+  .trust-item {
+    font-size: 0.78rem;
   }
 }
 
@@ -1068,6 +1137,10 @@
   border-radius: var(--radius-xs);
   letter-spacing: 0.05em;
   z-index: 3;
+  max-width: 58%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: transform 0.3s ease;
 }
 
@@ -1096,6 +1169,7 @@
   box-shadow: var(--shadow-xs);
   border: 1px solid #FECACA;
   z-index: 3;
+  white-space: nowrap;
   animation: softBadgePulse 3.5s ease-in-out infinite;
 }
 
@@ -1194,6 +1268,61 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .product-badge {
+    top: 0.5rem;
+    left: 0.5rem;
+    font-size: 0.62rem;
+    padding: 0.2rem 0.45rem;
+    max-width: 55%;
+  }
+  .product-discount-pill {
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 0.64rem;
+    padding: 0.2rem 0.45rem;
+  }
+  .product-capacity-tag {
+    bottom: 0.5rem;
+    left: 0.5rem;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.45rem;
+  }
+  .product-card-body {
+    padding: 0.9rem;
+  }
+  .product-card-title {
+    font-size: 0.95rem;
+    min-height: 2.4rem;
+  }
+  .product-card-actions {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+  }
+  .product-card-actions .btn {
+    padding: 0.45rem 0.3rem;
+    font-size: 0.74rem;
+    gap: 0.25rem;
+    white-space: nowrap;
+  }
+  .product-card-actions .btn svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .product-card-actions {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+  .product-card-actions .btn {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
+  }
 }
 
 /* ========================================================
@@ -1822,6 +1951,38 @@
   .about-badge-card {
     right: 1rem;
     bottom: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-pillars-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    text-align: left;
+  }
+  .about-pillars-grid .pillar-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-align: left;
+  }
+  .about-pillars-grid .pillar-icon-box {
+    margin: 0;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+  }
+  .about-badge-card {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    padding: 1rem;
+    max-width: 200px;
+  }
+  .about-badge-card .stat-num {
+    font-size: 1.75rem;
+  }
+  .about-badge-card .stat-text {
+    font-size: 0.75rem;
   }
 }
 
@@ -2635,26 +2796,46 @@
     flex: 0 0 calc(50% - 0.75rem);
     min-width: 250px;
   }
-  .wakefit-nav-arrow.btn-prev {
-    left: 4px;
-  }
-  .wakefit-nav-arrow.btn-next {
-    right: 4px;
+}
+
+@media (max-width: 768px) {
+  .wakefit-nav-arrow {
+    display: none !important;
   }
 }
 
 @media (max-width: 600px) {
+  .wakefit-arrivals-banner {
+    padding: 1.5rem 1rem 1rem;
+  }
+  .wakefit-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
   .wakefit-3d-letter,
   .wakefit-title-text {
-    font-size: 1.85rem;
+    font-size: 1.7rem;
+  }
+  .wakefit-subtitle {
+    font-size: 0.85rem;
   }
   .wakefit-capsule-bar {
-    gap: 1.15rem;
-    padding: 0.5rem 1.15rem;
+    gap: 0.75rem;
+    padding: 0.4rem 0.75rem;
+  }
+  .wakefit-capsule-item {
+    font-size: 0.85rem;
+    white-space: nowrap;
   }
   .wakefit-card {
     flex: 0 0 85%;
-    min-width: 240px;
+    min-width: 230px;
+    scroll-snap-align: center;
+  }
+  .wakefit-cards-row {
+    padding: 0.5rem 0.25rem 1.25rem;
+    gap: 1rem;
   }
 }
 
@@ -2707,16 +2888,31 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 640px) {
+  .product-detail-grid {
+    gap: 1.75rem;
+    margin-bottom: 2.5rem;
+  }
   .product-trust-grid {
     grid-template-columns: 1fr;
-    gap: 0.85rem;
+    gap: 0.75rem;
   }
   .product-action-btns {
     flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
   }
   .product-action-btns .btn {
-    width: 100%;
+    width: 100% !important;
+    padding: 0.85rem 1rem !important;
+    font-size: 0.95rem !important;
+    white-space: normal !important;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .product-action-btns .btn svg {
+    flex-shrink: 0;
   }
 }
 
@@ -2869,4 +3065,171 @@
     width: 100% !important;
   }
 }
+
+/* ========================================================
+   MODAL & CONTACT INSTANT PHONE / WHATSAPP WIDGETS
+   ======================================================== */
+.modal-quick-contact {
+  background: var(--bg-sand, #F9F6F0);
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-light, #E8DFD5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.quick-contact-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.quick-contact-label {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.quick-contact-phone {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--color-espresso);
+}
+
+.quick-contact-btn-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.quick-call-btn {
+  background: #FFFFFF;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--color-primary);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.quick-call-btn:hover {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.quick-whatsapp-btn {
+  background: #25D366;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.82rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quick-whatsapp-btn:hover {
+  background: #20BD5A;
+  color: #FFFFFF;
+}
+
+@media (max-width: 520px) {
+  .modal-quick-contact {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.85rem 1rem;
+    gap: 0.75rem;
+  }
+  .quick-contact-btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  .quick-call-btn,
+  .quick-whatsapp-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.82rem;
+  }
+}
+
+/* Contact Page Instant Contact Box */
+.contact-quick-box {
+  background: var(--color-espresso-dark);
+  color: #FFFFFF;
+  padding: 1.75rem;
+  border-radius: var(--radius-lg);
+}
+
+.contact-quick-btns {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 540px) {
+  .contact-quick-box {
+    padding: 1.25rem 1rem;
+  }
+  .contact-quick-btns {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+  .contact-quick-btns .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Modal Footer Actions */
+.modal-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+}
+
+@media (max-width: 520px) {
+  .modal-footer-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .modal-footer-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Products Grid Responsive Fallback */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 1.75rem;
+}
+
+@media (max-width: 540px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
 

@@ -200,7 +200,7 @@ export default function ProductDetailPage() {
 
             {/* Thumbnail Row */}
             {images.length > 1 && (
-              <div style={{ display: 'flex', gap: '0.85rem', marginTop: '1rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', overflowX: 'auto', paddingBottom: '0.35rem' }}>
                 {images.map((img, idx) => (
                   <button
                     key={idx}
@@ -212,8 +212,9 @@ export default function ProductDetailPage() {
                       }
                     }}
                     style={{
-                      width: '84px',
-                      height: '64px',
+                      width: '80px',
+                      height: '60px',
+                      flexShrink: 0,
                       borderRadius: 'var(--radius-sm)',
                       overflow: 'hidden',
                       border: activeImageIndex === idx ? '2.5px solid var(--color-primary)' : '1px solid var(--border-light)',
@@ -445,7 +446,7 @@ export default function ProductDetailPage() {
               </Link>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.75rem' }}>
+            <div className="products-grid">
               {relatedProducts.map((rel) => (
                 <ProductCard key={rel._id} product={rel} />
               ))}

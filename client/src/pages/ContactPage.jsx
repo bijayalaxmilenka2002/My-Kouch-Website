@@ -243,14 +243,14 @@ export default function ContactPage() {
             </div>
 
             {/* Quick Connect Actions */}
-            <div style={{ background: 'var(--color-espresso-dark)', color: '#FFFFFF', padding: '1.75rem', borderRadius: 'var(--radius-lg)' }}>
+            <div className="contact-quick-box">
               <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: '#FFFFFF' }}>
                 Instant Telephone &amp; WhatsApp Support
               </h4>
               <p style={{ fontSize: '0.85rem', color: '#D3C6B9', marginBottom: '1.25rem' }}>
                 Speak directly with the shopkeeper or get photos sent directly to your phone.
               </p>
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div className="contact-quick-btns">
                 <a
                   href="tel:+918093376990"
                   className="btn btn-primary btn-sm"

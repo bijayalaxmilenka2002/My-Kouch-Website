@@ -203,34 +203,20 @@ export default function EnquiryContactModal() {
           ) : (
             <>
               {/* Quick Contact Bar */}
-              <div
-                style={{
-                  background: 'var(--bg-sand, #F9F6F0)',
-                  borderRadius: 'var(--radius-md, 8px)',
-                  padding: '1rem 1.25rem',
-                  marginBottom: '1.5rem',
-                  border: '1px solid var(--border-light, #E8DFD5)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '0.75rem',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', fontWeight: 700 }}>
+              <div className="modal-quick-contact">
+                <div className="quick-contact-info">
+                  <div className="quick-contact-label">
                     Instant Assistance
                   </div>
-                  <div style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--color-espresso)' }}>
+                  <div className="quick-contact-phone">
                     +91 80933 76990
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div className="quick-contact-btn-group">
                   <a
                     href="tel:+918093376990"
-                    className="btn btn-outline btn-sm"
-                    style={{ background: '#FFFFFF', padding: '0.4rem 0.85rem', fontSize: '0.82rem' }}
+                    className="quick-call-btn"
                   >
                     <Phone size={14} />
                     <span>Call Now</span>
@@ -238,14 +224,7 @@ export default function EnquiryContactModal() {
                   <button
                     type="button"
                     onClick={handleWhatsAppDirect}
-                    className="btn btn-sm"
-                    style={{
-                      background: '#25D366',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      padding: '0.4rem 0.85rem',
-                      fontSize: '0.82rem',
-                    }}
+                    className="quick-whatsapp-btn"
                   >
                     <MessageSquare size={14} />
                     <span>WhatsApp</span>

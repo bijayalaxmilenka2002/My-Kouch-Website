@@ -205,9 +205,19 @@ export default function Navbar() {
           <button
             onClick={() => setMobileMenuOpen(false)}
             aria-label="Close Navigation"
-            style={{ padding: '0.4rem', color: 'var(--color-espresso)' }}
+            style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              background: 'var(--bg-sand)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--color-espresso)',
+              flexShrink: 0,
+            }}
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 

@@ -352,7 +352,7 @@ export default function CollectionsPage() {
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.75rem' }}>
+              <div className="products-grid">
                 {products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}

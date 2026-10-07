@@ -461,12 +461,11 @@ export default function CustomSofaModal() {
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-light)' }}>
+              <div className="modal-footer-actions">
                 <button
                   type="button"
                   onClick={closeCustomizeModal}
                   className="btn btn-light"
-                  style={{ padding: '0.55rem 1.15rem', fontSize: '0.84rem' }}
                 >
                   Cancel
                 </button>
@@ -474,7 +473,6 @@ export default function CustomSofaModal() {
                   type="submit"
                   disabled={loading}
                   className="btn btn-primary"
-                  style={{ padding: '0.55rem 1.35rem', fontSize: '0.84rem' }}
                 >
                   {loading ? (
                     <span>Submitting Enquiry...</span>
