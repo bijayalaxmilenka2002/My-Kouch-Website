@@ -13,7 +13,7 @@ import {
   ArrowRight,
   Phone,
 } from 'lucide-react';
-import { getProductById } from '../services/api';
+import { getProductById, getImageUrl } from '../services/api';
 import { useSofa } from '../context/SofaContext';
 import ProductCard from '../components/ProductCard';
 import SEO from '../components/SEO';
@@ -173,9 +173,23 @@ export default function ProductDetailPage() {
             {/* Main Stage Image */}
             <div style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', background: '#FFFFFF', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-md)', aspectRatio: '4 / 3', position: 'relative' }}>
               <img
-                src={images[activeImageIndex]}
+                src={getImageUrl(images[activeImageIndex])}
                 alt={product.name}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  if (!e.target.dataset.triedRelative && e.target.src.includes('/uploads/')) {
+                    e.target.dataset.triedRelative = 'true';
+                    const parts = e.target.src.split('/uploads/');
+                    if (parts[1]) {
+                      e.target.src = `/uploads/${parts[1]}`;
+                      return;
+                    }
+                  }
+                  if (!e.target.dataset.failed) {
+                    e.target.dataset.failed = 'true';
+                    e.target.src = '/assets/sofas/drawing_room_1_2.jpg';
+                  }
+                }}
               />
               {product.badge && (
                 <span className={`product-badge ${product.badge.toLowerCase().includes('best') ? 'bestseller' : 'new'}`} style={{ top: '1rem', left: '1rem' }}>
@@ -209,7 +223,7 @@ export default function ProductDetailPage() {
                     }}
                     title={product.colors && product.colors[idx] ? `View ${product.colors[idx]}` : `Image ${idx + 1}`}
                   >
-                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={getImageUrl(img)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </button>
                 ))}
               </div>

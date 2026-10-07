@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Star, MessageSquare, Sliders } from 'lucide-react';
 import { useSofa } from '../context/SofaContext';
+import { getImageUrl } from '../services/api';
 
 export default function ProductCard({ product }) {
   const { openCustomizeModal } = useSofa();
@@ -24,10 +25,25 @@ export default function ProductCard({ product }) {
       <div className="product-card-image-wrap">
         <Link to={`/product/${product._id || product.slug}`}>
           <img
-            src={displayImage}
+            src={getImageUrl(displayImage)}
             alt={product.name}
             className="product-card-image"
             loading="lazy"
+            onError={(e) => {
+              if (!e.target.dataset.triedRelative && e.target.src.includes('/uploads/')) {
+                e.target.dataset.triedRelative = 'true';
+                // Try relative static path on Vercel
+                const parts = e.target.src.split('/uploads/');
+                if (parts[1]) {
+                  e.target.src = `/uploads/${parts[1]}`;
+                  return;
+                }
+              }
+              if (!e.target.dataset.failed) {
+                e.target.dataset.failed = 'true';
+                e.target.src = '/assets/sofas/drawing_room_1_2.jpg';
+              }
+            }}
           />
         </Link>
 

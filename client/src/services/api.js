@@ -2,6 +2,24 @@ const API_BASE = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, '')}/api` 
   : '/api';
 
+/**
+ * Resolves sofa image path across both local assets and remote/local uploads
+ */
+export const getImageUrl = (imgPath) => {
+  if (!imgPath) return '/assets/sofas/drawing_room_1_2.jpg';
+  if (typeof imgPath !== 'string') return '/assets/sofas/drawing_room_1_2.jpg';
+  if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
+    return imgPath;
+  }
+  if (imgPath.startsWith('/uploads')) {
+    const backendUrl = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace(/\/+$/, '') 
+      : '';
+    return backendUrl ? `${backendUrl}${imgPath}` : imgPath;
+  }
+  return imgPath;
+};
+
 // Helper for fetch with headers and auth
 const request = async (endpoint, options = {}) => {
   const { token, ...customOptions } = options;

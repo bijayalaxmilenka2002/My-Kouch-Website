@@ -36,6 +36,7 @@ import {
   deleteEnquiry,
   getDashboardStats,
   uploadImage,
+  getImageUrl,
 } from '../services/api';
 
 const categories = [
@@ -577,9 +578,23 @@ export default function OwnerDashboardPage() {
                       <td>
                         <div className="product-table-cell">
                           <img
-                            src={prod.images?.[0] || '/assets/sofas/drawing_room_1_2.jpg'}
+                            src={getImageUrl(prod.images?.[0])}
                             alt=""
                             className="product-table-thumb"
+                            onError={(e) => {
+                              if (!e.target.dataset.triedRelative && e.target.src.includes('/uploads/')) {
+                                e.target.dataset.triedRelative = 'true';
+                                const parts = e.target.src.split('/uploads/');
+                                if (parts[1]) {
+                                  e.target.src = `/uploads/${parts[1]}`;
+                                  return;
+                                }
+                              }
+                              if (!e.target.dataset.failed) {
+                                e.target.dataset.failed = 'true';
+                                e.target.src = '/assets/sofas/drawing_room_1_2.jpg';
+                              }
+                            }}
                           />
                           <div>
                             <strong style={{ color: 'var(--color-espresso)', display: 'block' }}>
@@ -1040,9 +1055,15 @@ export default function OwnerDashboardPage() {
                     {productForm.images.map((img, i) => (
                       <img
                         key={i}
-                        src={img}
+                        src={getImageUrl(img)}
                         alt=""
                         style={{ width: '60px', height: '48px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-light)' }}
+                        onError={(e) => {
+                          if (!e.target.dataset.failed) {
+                            e.target.dataset.failed = 'true';
+                            e.target.src = '/assets/sofas/drawing_room_1_2.jpg';
+                          }
+                        }}
                       />
                     ))}
                   </div>

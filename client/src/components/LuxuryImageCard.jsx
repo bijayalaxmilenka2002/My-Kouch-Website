@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { getImageUrl } from '../services/api';
 
 export default function LuxuryImageCard({ product }) {
   const displayImage =
@@ -18,10 +19,16 @@ export default function LuxuryImageCard({ product }) {
     >
       <div className="luxury-image-card-wrap">
         <img
-          src={displayImage}
+          src={getImageUrl(displayImage)}
           alt={product.name}
           className="luxury-image-card-img"
           loading="lazy"
+          onError={(e) => {
+            if (!e.target.dataset.fallback) {
+              e.target.dataset.fallback = 'true';
+              e.target.src = '/assets/sofas/drawing_room_1_12.jpg';
+            }
+          }}
         />
 
         <div className="luxury-image-card-scrim">

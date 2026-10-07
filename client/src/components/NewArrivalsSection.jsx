@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, Sparkles, ArrowRight } from 'lucide-react';
 import { useSofa } from '../context/SofaContext';
+import { getImageUrl } from '../services/api';
 
 export default function NewArrivalsSection({ products = [], loading = false }) {
   const { openCustomizeModal } = useSofa();
@@ -211,10 +212,24 @@ export default function NewArrivalsSection({ products = [], loading = false }) {
                   >
                     <div className="wakefit-card-img-wrap">
                       <img
-                        src={imgUrl}
+                        src={getImageUrl(imgUrl)}
                         alt={prod.name}
                         className="wakefit-card-img"
                         loading="lazy"
+                        onError={(e) => {
+                          if (!e.target.dataset.triedRelative && e.target.src.includes('/uploads/')) {
+                            e.target.dataset.triedRelative = 'true';
+                            const parts = e.target.src.split('/uploads/');
+                            if (parts[1]) {
+                              e.target.src = `/uploads/${parts[1]}`;
+                              return;
+                            }
+                          }
+                          if (!e.target.dataset.failed) {
+                            e.target.dataset.failed = 'true';
+                            e.target.src = '/assets/sofas/royal_chesterfield_noir.jpg';
+                          }
+                        }}
                       />
                       <span className="wakefit-card-tag">
                         {prod.badge || 'New Launch'}
