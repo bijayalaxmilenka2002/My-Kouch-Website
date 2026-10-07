@@ -17,6 +17,7 @@ import { getProductById, getImageUrl } from '../services/api';
 import { useSofa } from '../context/SofaContext';
 import ProductCard from '../components/ProductCard';
 import SEO from '../components/SEO';
+import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -43,10 +44,28 @@ export default function ProductDetailPage() {
             setSelectedColor(res.product.colors[0]);
           }
         } else {
-          setError('Sofa model not found');
+          // Check fallback
+          const fb = FALLBACK_PRODUCTS.find((p) => p._id === id || p.slug === id);
+          if (fb) {
+            setProduct(fb);
+            setRelatedProducts(FALLBACK_PRODUCTS.filter((p) => p._id !== fb._id && p.category === fb.category).slice(0, 4));
+            setActiveImageIndex(0);
+            if (fb.colors && fb.colors.length > 0) setSelectedColor(fb.colors[0]);
+          } else {
+            setError('Product not found');
+          }
         }
       } catch (err) {
-        setError(err.message || 'Error loading product details');
+        // If API fails during Render cold-start, check fallback products
+        const fb = FALLBACK_PRODUCTS.find((p) => p._id === id || p.slug === id);
+        if (fb) {
+          setProduct(fb);
+          setRelatedProducts(FALLBACK_PRODUCTS.filter((p) => p._id !== fb._id && p.category === fb.category).slice(0, 4));
+          setActiveImageIndex(0);
+          if (fb.colors && fb.colors.length > 0) setSelectedColor(fb.colors[0]);
+        } else {
+          setError(err.message || 'Error loading product details');
+        }
       } finally {
         setLoading(false);
       }
@@ -59,7 +78,7 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: 'var(--text-muted)' }}>Loading sofa craftsmanship details...</p>
+        <p style={{ color: 'var(--text-muted)' }}>Loading product craftsmanship details...</p>
       </div>
     );
   }
@@ -67,12 +86,12 @@ export default function ProductDetailPage() {
   if (error || !product) {
     return (
       <div className="container" style={{ padding: '5rem 1.5rem', textAlign: 'center' }}>
-        <h2 style={{ marginBottom: '1rem', color: 'var(--color-espresso)' }}>Sofa Not Found</h2>
+        <h2 style={{ marginBottom: '1rem', color: 'var(--color-espresso)' }}>Product Not Found</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-          The requested sofa model could not be found in our collection.
+          The requested product could not be found in our collection catalogue.
         </p>
         <Link to="/collections" className="btn btn-primary">
-          Browse All Sofas
+          Browse All Collections
         </Link>
       </div>
     );
@@ -159,7 +178,7 @@ export default function ProductDetailPage() {
         {/* Breadcrumb */}
         <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>
           <Link to="/" style={{ color: 'var(--text-secondary)' }}>Home</Link> &gt;{' '}
-          <Link to="/collections" style={{ color: 'var(--text-secondary)' }}>Sofas</Link> &gt;{' '}
+          <Link to="/collections" style={{ color: 'var(--text-secondary)' }}>Collections</Link> &gt;{' '}
           <Link to={`/collections?category=${encodeURIComponent(product.category)}`} style={{ color: 'var(--text-secondary)' }}>
             {product.category}
           </Link> &gt;{' '}

@@ -38,7 +38,17 @@ export const getProducts = async (req, res) => {
     }
 
     if (category && category !== 'All') {
-      query.category = category;
+      const slugMap = {
+        'mattress-beddings': 'Mattress & Beddings',
+        'pillow-cushion': 'Pillow & Cushion',
+        'l-shaped-sofas': 'L-Shaped Sofas',
+        '3-seater-sofas': '3 Seater Sofas',
+        'sofa-combos': 'Sofa Combos',
+        'recliner-sofas': 'Recliner Sofas',
+        '2-seater-sofas': '2 Seater Sofas',
+      };
+      const normalizedCategory = slugMap[category.toLowerCase()] || category;
+      query.category = normalizedCategory;
     }
 
     if (isNewArrival !== undefined) {
@@ -198,7 +208,7 @@ export const createProduct = async (req, res) => {
       dimensions: dimensions || 'Standard Luxury Fit',
       colors: Array.isArray(colors) ? colors : typeof colors === 'string' ? colors.split(',').map(s => s.trim()) : undefined,
       materials: Array.isArray(materials) ? materials : typeof materials === 'string' ? materials.split(',').map(s => s.trim()) : undefined,
-      seatingCapacity: seatingCapacity || '3 Seater',
+      seatingCapacity: seatingCapacity || (category.includes('Sofa') ? '3 Seater' : ''),
       badge: badge || (isNewArrival ? 'New Arrival' : ''),
       isNewArrival: isNewArrival === true || isNewArrival === 'true',
       isTopSelling: isTopSelling === true || isTopSelling === 'true',

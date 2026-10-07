@@ -110,7 +110,7 @@ export default function ProductCard({ product }) {
           <button
             onClick={() => openEnquiryModal(product)}
             className="btn btn-primary btn-sm"
-            title="Instant Sofa Enquiry"
+            title="Instant Product Enquiry"
           >
             <MessageSquare size={13} />
             <span>Enquire</span>

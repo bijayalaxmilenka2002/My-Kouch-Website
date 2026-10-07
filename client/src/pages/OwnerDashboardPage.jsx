@@ -39,13 +39,9 @@ import {
   getImageUrl,
 } from '../services/api';
 
-const categories = [
-  'L-Shaped Sofas',
-  '3 Seater Sofas',
-  'Sofa Combos',
-  'Recliner Sofas',
-  '2 Seater Sofas',
-];
+import { CATEGORY_NAMES } from '../constants/categories';
+
+const categories = CATEGORY_NAMES;
 
 export default function OwnerDashboardPage() {
   const { token, owner, logout } = useAuth();
@@ -546,7 +542,7 @@ export default function OwnerDashboardPage() {
                 <Search size={18} color="var(--text-muted)" />
                 <input
                   type="text"
-                  placeholder="Search sofa by name or category..."
+                  placeholder="Search products by name or category..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -555,7 +551,7 @@ export default function OwnerDashboardPage() {
               <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button onClick={handleOpenAddProduct} className="btn btn-primary">
                   <Plus size={18} />
-                  <span>Add New Sofa</span>
+                  <span>Add New Product</span>
                 </button>
               </div>
             </div>
@@ -564,10 +560,10 @@ export default function OwnerDashboardPage() {
               <table className="dashboard-table">
                 <thead>
                   <tr>
-                    <th>Sofa Details</th>
+                    <th>Product Details</th>
                     <th>Category</th>
                     <th>Price</th>
-                    <th>Capacity</th>
+                    <th>Size / Capacity</th>
                     <th>New Arrival</th>
                     <th>Top Selling</th>
                     <th>Active</th>
@@ -936,7 +932,7 @@ export default function OwnerDashboardPage() {
           <div className="modal-card" style={{ maxWidth: '780px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">
-                {editingProduct ? 'Edit Sofa Product' : 'Add New Sofa to Catalog'}
+                {editingProduct ? 'Edit Product' : 'Add New Product to Catalog'}
               </h2>
               <button onClick={() => setIsProductModalOpen(false)} className="modal-close-btn">
                 <X size={20} />
@@ -945,13 +941,13 @@ export default function OwnerDashboardPage() {
 
             <form onSubmit={handleSaveProduct} className="modal-body">
               <div className="form-group">
-                <label className="form-label">Sofa Name *</label>
+                <label className="form-label">Product Name *</label>
                 <input
                   type="text"
                   required
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  placeholder="e.g. myKouch Tuscany Velvet Sectional"
+                  placeholder="e.g. myKouch Orthopedic Mattress / Tuscany Sectional"
                   style={{ width: '100%' }}
                 />
               </div>
@@ -971,12 +967,12 @@ export default function OwnerDashboardPage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Seating Capacity</label>
+                  <label className="form-label">Size / Capacity (e.g. King, Queen, 3-Seater)</label>
                   <input
                     type="text"
                     value={productForm.seatingCapacity}
                     onChange={(e) => setProductForm({ ...productForm, seatingCapacity: e.target.value })}
-                    placeholder="e.g. 6 Seater or 3 + 1 + 1"
+                    placeholder="e.g. King Size / Queen Size or 3 Seater"
                     style={{ width: '100%' }}
                   />
                 </div>
@@ -1024,7 +1020,7 @@ export default function OwnerDashboardPage() {
                   rows={3}
                   value={productForm.description}
                   onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
-                  placeholder="Describe comfort, tufting, upholstery, foam density..."
+                  placeholder="Describe comfort, materials, dimensions, warranty, foam density..."
                   style={{ width: '100%' }}
                 />
               </div>
@@ -1033,7 +1029,7 @@ export default function OwnerDashboardPage() {
               <div className="form-group" style={{ background: 'var(--bg-sand-light)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px dashed var(--border-medium)' }}>
                 <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   <Upload size={16} />
-                  <span>Upload Sofa Photo (Direct from Computer)</span>
+                  <span>Upload Product Photo (Direct from Computer)</span>
                 </label>
                 <input
                   type="file"

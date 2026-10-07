@@ -94,9 +94,25 @@ export default function Navbar() {
             <li>
               <Link
                 to="/collections"
-                className={`nav-link ${location.pathname === '/collections' && !location.search ? 'active' : ''}`}
+                className={`nav-link ${location.pathname === '/collections' && (!location.search || (!location.search.includes('mattress') && !location.search.includes('pillow') && !location.search.includes('cushion') && !location.search.includes('new-arrivals'))) ? 'active' : ''}`}
               >
                 All Sofas
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/collections?category=mattress-beddings"
+                className={`nav-link ${location.search.includes('mattress') ? 'active' : ''}`}
+              >
+                Mattress &amp; Beddings
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/collections?category=pillow-cushion"
+                className={`nav-link ${location.search.includes('pillow') || location.search.includes('cushion') ? 'active' : ''}`}
+              >
+                Pillows &amp; Cushions
               </Link>
             </li>
             <li>
@@ -105,14 +121,6 @@ export default function Navbar() {
                 className={`nav-link ${location.search.includes('L-Shaped') ? 'active' : ''}`}
               >
                 L-Shape
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/collections?category=Sofa Combos"
-                className={`nav-link ${location.search.includes('Combos') ? 'active' : ''}`}
-              >
-                Sofa Combos
               </Link>
             </li>
             <li>
@@ -230,6 +238,24 @@ export default function Navbar() {
           <li>
             <Link to="/collections" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">
               All Sofas
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/collections?category=mattress-beddings"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`mobile-nav-link ${location.search.includes('mattress') ? 'active' : ''}`}
+            >
+              Mattress &amp; Beddings
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/collections?category=pillow-cushion"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`mobile-nav-link ${location.search.includes('pillow') || location.search.includes('cushion') ? 'active' : ''}`}
+            >
+              Pillows &amp; Cushions
             </Link>
           </li>
           <li>

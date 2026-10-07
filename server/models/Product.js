@@ -21,13 +21,15 @@ const productSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      required: [true, 'Sofa category is required'],
+      required: [true, 'Product category is required'],
       enum: [
         'L-Shaped Sofas',
         '3 Seater Sofas',
         'Sofa Combos',
         'Recliner Sofas',
         '2 Seater Sofas',
+        'Mattress & Beddings',
+        'Pillow & Cushion',
       ],
       trim: true,
     },
@@ -59,7 +61,7 @@ const productSchema = new mongoose.Schema(
     },
     dimensions: {
       type: String,
-      default: 'Standard Living Room Dimensions',
+      default: 'Standard Dimensions',
     },
     colors: {
       type: [String],
@@ -71,8 +73,7 @@ const productSchema = new mongoose.Schema(
     },
     seatingCapacity: {
       type: String,
-      required: true,
-      default: '3 Seater',
+      default: '',
     },
     badge: {
       type: String,

@@ -1,41 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { CATEGORIES } from '../constants/categories';
 
-const categories = [
-  {
-    name: 'L-Shaped Sofas',
-    slug: 'L-Shaped Sofas',
-    description: 'Expansive corner sectionals and chaise loungers engineered for ultimate living room relaxation.',
-    image: '/assets/sofas/drawing_room_1_12.jpg',
-    badge: 'Trending Design',
-    count: '15+ Configurations',
-  },
-  {
-    name: 'Sofa Combos (3+1+1)',
-    slug: 'Sofa Combos',
-    description: 'Stately complete suites pairing a 3-seater centerpiece with matching individual royal armchairs.',
-    image: '/assets/sofas/drawing_room_1_16.jpg',
-    badge: 'Living Room Suite',
-    count: '12+ Sets',
-  },
-  {
-    name: '3 Seater Sofas',
-    slug: '3 Seater Sofas',
-    description: 'Timeless architectural sofas with deep seating, fluted backrests, and modern silhouettes.',
-    image: '/assets/sofas/drawing_room_1_21.jpg',
-    badge: 'Popular',
-    count: '20+ Styles',
-  },
-  {
-    name: 'Recliner Sofas',
-    slug: 'Recliner Sofas',
-    description: 'Motorized and manual zero-gravity recliners featuring lumbar support and whisper-quiet motors.',
-    image: '/assets/sofas/drawing_room_1_25.jpg',
-    badge: 'Ergonomic Luxury',
-    count: '8+ Models',
-  },
-];
+// Show the 6 core customer categories on home showcase
+const homeCategories = CATEGORIES.filter(c => c.slug !== '2-seater-sofas');
 
 export default function CategorySection() {
   return (
@@ -44,20 +13,20 @@ export default function CategorySection() {
         <div className="section-header reveal-on-scroll">
           <span className="section-tag">
             <Sparkles size={14} />
-            <span>Discover by Sofa Category</span>
+            <span>Discover by Collection</span>
           </span>
-          <h2 className="section-title">Engineered For Every Living Space</h2>
+          <h2 className="section-title">Engineered For Every Living Space &amp; Bedroom</h2>
           <p className="section-subtitle">
-            Explore our handcrafted sofa categories tailored to different seating arrangements, room dimensions, and luxury aesthetics.
+            Explore our handcrafted luxury sofas, orthopedic mattresses, and plush designer cushions tailored to bespoke dimensions and aesthetics.
           </p>
         </div>
 
         <div className="category-grid">
-          {categories.map((cat, idx) => (
+          {homeCategories.map((cat, idx) => (
             <Link
-              key={cat.name}
+              key={cat.slug}
               to={`/collections?category=${encodeURIComponent(cat.slug)}`}
-              className={`category-card reveal-on-scroll delay-${idx + 1}`}
+              className={`category-card reveal-on-scroll delay-${(idx % 4) + 1}`}
             >
               <div className="category-image-wrap">
                 <img
@@ -70,7 +39,14 @@ export default function CategorySection() {
               </div>
 
               <div className="category-content">
-                <h3 className="category-name">{cat.name}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                  <h3 className="category-name">{cat.name}</h3>
+                  {cat.badge && (
+                    <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: 'var(--radius-full)', background: 'var(--bg-sand)', color: 'var(--color-primary)' }}>
+                      {cat.badge}
+                    </span>
+                  )}
+                </div>
                 <p className="category-desc">{cat.description}</p>
                 <span className="category-explore-link">
                   <span>Explore Series</span>

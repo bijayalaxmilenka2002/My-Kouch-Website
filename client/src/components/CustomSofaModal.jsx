@@ -231,12 +231,14 @@ export default function CustomSofaModal() {
                     <option value="3 Seater Sofas">3-Seater Linear Sofa</option>
                     <option value="Recliner Sofas">Motorized / Manual Recliner</option>
                     <option value="2 Seater Sofas">2-Seater / Loveseat</option>
+                    <option value="Mattress & Beddings">Mattress &amp; Beddings</option>
+                    <option value="Pillow & Cushion">Pillow &amp; Cushion</option>
                   </select>
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">
-                    <span>Seating Preference</span>
+                    <span>Size / Seating Preference</span>
                   </label>
                   <select
                     name="seatingPreference"
@@ -250,6 +252,9 @@ export default function CustomSofaModal() {
                     <option value="6 Seater (L-Shape Left Chaise)">6 Seater L-Shape (Left Chaise)</option>
                     <option value="7+ Seater Grand Sectional">7+ Seater Grand Sectional</option>
                     <option value="Single Recliner">Single Recliner</option>
+                    <option value="King Size (72 x 78)">King Size (72" x 78")</option>
+                    <option value="Queen Size (60 x 78)">Queen Size (60" x 78")</option>
+                    <option value="Set of 4 Cushions">Set of 4 Cushions</option>
                   </select>
                 </div>
               </div>

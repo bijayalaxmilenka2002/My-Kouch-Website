@@ -14,8 +14,10 @@ import { useSofa } from '../context/SofaContext';
 import { submitEnquiry } from '../services/api';
 
 const ENQUIRY_TYPES = [
-  'General Sofa Enquiry',
+  'General Enquiry',
   'Pricing & Discount Offers',
+  'Mattress & Beddings Enquiry',
+  'Pillows & Cushions Enquiry',
   'Showroom Visit & Trial',
   'Custom Build / Fabric Details',
   'Bulk & Interior Project',

@@ -153,9 +153,9 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Sofa Collections */}
+          {/* Collections & Categories */}
           <div className="footer-col-links">
-            <h4 className="footer-heading">Handcrafted Sofas</h4>
+            <h4 className="footer-heading">Collections &amp; Categories</h4>
             <ul className="footer-links-list">
               <li className="footer-link-item">
                 <Link to="/collections?category=L-Shaped Sofas">L-Shaped Sectionals</Link>
@@ -164,17 +164,17 @@ export default function Footer() {
                 <Link to="/collections?category=Sofa Combos">Sofa Combos (3+1+1)</Link>
               </li>
               <li className="footer-link-item">
-                <Link to="/collections?category=3 Seater Sofas">3-Seater Living Sofas</Link>
-              </li>
-              <li className="footer-link-item">
                 <Link to="/collections?category=Recliner Sofas">Motorized Recliners</Link>
               </li>
               <li className="footer-link-item">
-                <Link to="/collections?category=2 Seater Sofas">2-Seater Studio Sofas</Link>
+                <Link to="/collections?category=mattress-beddings">Mattress &amp; Beddings</Link>
+              </li>
+              <li className="footer-link-item">
+                <Link to="/collections?category=pillow-cushion">Pillows &amp; Cushions</Link>
               </li>
               <li className="footer-link-item">
                 <Link to="/collections" style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>
-                  Browse All Sofas →
+                  Browse All Collections →
                 </Link>
               </li>
             </ul>
