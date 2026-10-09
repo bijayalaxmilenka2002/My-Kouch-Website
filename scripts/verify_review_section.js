@@ -124,21 +124,21 @@ async function verifyReviews() {
 
     console.log('Section Info:', JSON.stringify(sectionInfo, null, 2));
 
-    // Scroll to the review cards grid
+    // Scroll to the review section header
     await cdp.eval(`
       (() => {
-        const grid = document.querySelector('.testimonials-grid');
-        if (grid) {
-          grid.scrollIntoView({ behavior: 'instant', block: 'center' });
+        const section = document.querySelector('#reviews');
+        if (section) {
+          section.scrollIntoView({ behavior: 'instant', block: 'start' });
         }
       })()
     `);
     await delay(1000);
 
     const artifactDir = 'C:\\Users\\bijay\\.gemini\\antigravity-ide\\brain\\827afe67-eeac-423c-8dcd-ebad4cf16bfa';
-    const screenshotPath = path.join(artifactDir, 'verified_review_cards_grid.png');
+    const screenshotPath = path.join(artifactDir, 'verified_review_single_line_complete.png');
     await cdp.captureScreenshot(screenshotPath);
-    console.log('📸 Grid Screenshot saved successfully:', screenshotPath);
+    console.log('📸 Full Section Screenshot saved successfully:', screenshotPath);
 
     console.log('\n--- Review Section Verification Results ---');
     console.log(`Section Found: ${sectionInfo.found ? '✅ PASS' : '❌ FAIL'}`);
