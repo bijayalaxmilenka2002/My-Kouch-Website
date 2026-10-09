@@ -195,6 +195,16 @@ export default function CollectionsPage() {
     };
 
     fetchCollectionData();
+
+    // Real-time synchronization when owner makes updates in owner portal
+    const handleSync = () => fetchCollectionData();
+    window.addEventListener('storage', handleSync);
+    window.addEventListener('mykouch_sync', handleSync);
+
+    return () => {
+      window.removeEventListener('storage', handleSync);
+      window.removeEventListener('mykouch_sync', handleSync);
+    };
   }, [
     isSofaPillar,
     isBeddingPillar,

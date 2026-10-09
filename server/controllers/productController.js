@@ -178,13 +178,15 @@ export const createProduct = async (req, res) => {
       isActive,
     } = req.body;
 
-    if (!name || !description || !category || !price) {
+    if (!name || !price) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide name, description, category and price',
+        message: 'Please provide at least product name and price',
       });
     }
 
+    const safeDescription = description || `${name} - Handcrafted luxury custom furniture by myKouch Bhubaneswar.`;
+    const safeCategory = category || 'L-Shaped Sofas';
     const slug = createSlug(name);
 
     // Parse image array if passed as string
@@ -198,10 +200,7 @@ export const createProduct = async (req, res) => {
     }
 
     if (!parsedImages || parsedImages.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'At least one sofa image is required',
-      });
+      parsedImages = ['/assets/sofas/drawing_room_1_2.jpg'];
     }
 
     const slugCategoryMap = {
@@ -221,17 +220,25 @@ export const createProduct = async (req, res) => {
       'recliner-sofas': 'Recliner Sofas',
       '2-seater-sofas': '2 Seater Sofas',
     };
-    const finalCategory = slugCategoryMap[category.toLowerCase()] || category;
+    const finalCategory = slugCategoryMap[safeCategory.toLowerCase()] || safeCategory;
+
+    const numPrice = Number(price);
+    const numOrig = originalPrice ? Number(originalPrice) : undefined;
+    let computedDiscount = 0;
+    if (numOrig && numOrig > numPrice) {
+      computedDiscount = Math.round(((numOrig - numPrice) / numOrig) * 100);
+    }
 
     const product = new Product({
       name,
       slug,
-      description,
+      description: safeDescription,
       category: finalCategory,
       subType: subType || '',
       images: parsedImages,
-      price: Number(price),
-      originalPrice: originalPrice ? Number(originalPrice) : undefined,
+      price: numPrice,
+      originalPrice: numOrig,
+      discount: computedDiscount,
       specifications: typeof specifications === 'string' ? JSON.parse(specifications) : specifications,
       dimensions: dimensions || 'Standard Luxury Fit',
       colors: Array.isArray(colors) ? colors : typeof colors === 'string' ? colors.split(',').map(s => s.trim()) : undefined,
@@ -265,7 +272,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    let product;
+    let product = null;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
       product = await Product.findById(id);
@@ -273,11 +280,8 @@ export const updateProduct = async (req, res) => {
       product = await Product.findOne({ slug: id });
     }
 
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found',
-      });
+    if (!product && req.body.name) {
+      product = await Product.findOne({ name: req.body.name });
     }
 
     const updateData = { ...req.body };
@@ -302,8 +306,30 @@ export const updateProduct = async (req, res) => {
     if (updateData.price) updateData.price = Number(updateData.price);
     if (updateData.originalPrice) updateData.originalPrice = Number(updateData.originalPrice);
 
-    if (updateData.originalPrice && updateData.originalPrice > (updateData.price || product.price)) {
-      updateData.discount = Math.round(((updateData.originalPrice - (updateData.price || product.price)) / updateData.originalPrice) * 100);
+    if (updateData.originalPrice && updateData.originalPrice > (updateData.price || (product ? product.price : 0))) {
+      updateData.discount = Math.round(((updateData.originalPrice - (updateData.price || (product ? product.price : 0))) / updateData.originalPrice) * 100);
+    }
+
+    // Dynamic upsert: If product does not yet exist in MongoDB (e.g. originated from local draft), create it
+    if (!product) {
+      const newSlug = createSlug(updateData.name || 'product');
+      product = new Product({
+        ...updateData,
+        name: updateData.name || 'Custom Product',
+        slug: updateData.slug || newSlug,
+        category: updateData.category || 'L-Shaped Sofas',
+        description: updateData.description || `${updateData.name || 'Custom Product'} handcrafted by myKouch.`,
+        price: Number(updateData.price || 0),
+        images: (updateData.images && updateData.images.length > 0) ? updateData.images : ['/assets/sofas/drawing_room_1_2.jpg'],
+        isActive: updateData.isActive !== false,
+      });
+      await product.save();
+
+      return res.status(200).json({
+        success: true,
+        message: 'Product synced and stored in database',
+        product,
+      });
     }
 
     product = await Product.findByIdAndUpdate(product._id, updateData, {
@@ -331,7 +357,7 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    let product;
+    let product = null;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
       product = await Product.findByIdAndDelete(id);
@@ -340,15 +366,19 @@ export const deleteProduct = async (req, res) => {
     }
 
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found',
+      product = await Product.findOneAndDelete({
+        $or: [
+          { name: id },
+          { name: req.body?.name || '' },
+          { slug: req.body?.slug || '' },
+        ],
       });
     }
 
     return res.status(200).json({
       success: true,
       message: 'Product deleted successfully',
+      deletedId: id,
     });
   } catch (error) {
     return res.status(500).json({

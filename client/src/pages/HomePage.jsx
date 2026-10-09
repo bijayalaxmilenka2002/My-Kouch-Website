@@ -28,25 +28,49 @@ export default function HomePage() {
           getTestimonials().catch(() => ({ testimonials: [] })),
         ]);
 
-        if (prodRes?.products && prodRes.products.length > 0) {
-          setProducts(prodRes.products);
-        } else {
-          try {
-            const localCustomRaw = localStorage.getItem('mykouch_custom_products');
-            if (localCustomRaw) {
-              const localCustom = JSON.parse(localCustomRaw);
-              if (Array.isArray(localCustom) && localCustom.length > 0) {
-                setProducts(localCustom.filter((p) => p.isActive !== false));
+        // 1. Resolve & Intelligently Merge Products
+        let baseProducts = (prodRes?.products && prodRes.products.length > 0) ? prodRes.products : FALLBACK_PRODUCTS;
+        try {
+          const localCustomRaw = localStorage.getItem('mykouch_custom_products');
+          if (localCustomRaw) {
+            const localCustom = JSON.parse(localCustomRaw);
+            if (Array.isArray(localCustom) && localCustom.length > 0) {
+              const localMap = new Map(localCustom.map((p) => [p._id, p]));
+              const merged = baseProducts.map((p) => localMap.get(p._id) || p);
+              const baseIds = new Set(baseProducts.map((p) => p._id));
+              localCustom.forEach((p) => {
+                if (!baseIds.has(p._id)) merged.unshift(p);
+              });
+              baseProducts = merged.filter((p) => p.isActive !== false);
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+        setProducts(baseProducts);
+
+        // 2. Resolve & Intelligently Merge Promotional Offer
+        let resolvedOffer = offerRes?.offer || null;
+        try {
+          const localOffersRaw = localStorage.getItem('mykouch_custom_offers');
+          if (localOffersRaw) {
+            const localOffers = JSON.parse(localOffersRaw);
+            if (Array.isArray(localOffers) && localOffers.length > 0) {
+              const activeLocal = localOffers.find((o) => o.isActive !== false) || localOffers[0];
+              if (activeLocal) {
+                resolvedOffer = { ...(resolvedOffer || {}), ...activeLocal };
               }
             }
-          } catch (e) {
-            // ignore
           }
+        } catch (e) {
+          // ignore
         }
-        if (offerRes?.offer) {
-          setActiveOffer(offerRes.offer);
+        if (resolvedOffer) {
+          setActiveOffer(resolvedOffer);
         }
-        if (testRes?.testimonials) {
+
+        // 3. Resolve Testimonials
+        if (testRes?.testimonials && testRes.testimonials.length > 0) {
           setTestimonials(testRes.testimonials);
         }
       } catch (err) {
@@ -57,6 +81,16 @@ export default function HomePage() {
     };
 
     loadHomeData();
+
+    // Real-time synchronization whenever changes occur in owner portal
+    const handleSync = () => loadHomeData();
+    window.addEventListener('storage', handleSync);
+    window.addEventListener('mykouch_sync', handleSync);
+
+    return () => {
+      window.removeEventListener('storage', handleSync);
+      window.removeEventListener('mykouch_sync', handleSync);
+    };
   }, []);
 
   const location = useLocation();

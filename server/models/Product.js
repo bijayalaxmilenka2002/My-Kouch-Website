@@ -22,18 +22,6 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, 'Product category is required'],
-      enum: [
-        'L-Shaped Sofas',
-        '3 Seater Sofas',
-        'Sofa Combos',
-        'Recliner Sofas',
-        '2 Seater Sofas',
-        'Mattress & Beddings',
-        'Mattresses & Beddings',
-        'Pillow & Cushion',
-        'Pillows & Cushions',
-        'Pillows & Cushion',
-      ],
       trim: true,
     },
     subType: {
@@ -43,8 +31,8 @@ const productSchema = new mongoose.Schema(
     },
     images: {
       type: [String],
-      required: true,
-      validate: [val => val.length > 0, 'At least one image is required'],
+      default: ['/assets/sofas/drawing_room_1_2.jpg'],
+      validate: [val => !val || val.length > 0, 'At least one image is required'],
     },
     price: {
       type: Number,

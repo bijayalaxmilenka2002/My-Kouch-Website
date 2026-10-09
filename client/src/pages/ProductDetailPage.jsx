@@ -93,6 +93,16 @@ export default function ProductDetailPage() {
 
     fetchDetail();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Real-time synchronization when owner makes updates in owner portal
+    const handleSync = () => fetchDetail();
+    window.addEventListener('storage', handleSync);
+    window.addEventListener('mykouch_sync', handleSync);
+
+    return () => {
+      window.removeEventListener('storage', handleSync);
+      window.removeEventListener('mykouch_sync', handleSync);
+    };
   }, [id]);
 
   if (loading) {

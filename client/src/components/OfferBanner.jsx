@@ -98,6 +98,13 @@ export default function OfferBanner({ offer }) {
                 {currentOffer.title || 'These deals are too good to scroll past!'}
               </h2>
 
+              {/* Subtitle / Description if set by owner */}
+              {(currentOffer.subtitle || currentOffer.description) && (
+                <p className="flash-subtext" style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', margin: 0, lineHeight: 1.45, maxWidth: '520px' }}>
+                  {currentOffer.subtitle || currentOffer.description}
+                </p>
+              )}
+
               {currentOffer.couponCode && (
                 <div className="flash-coupon-row">
                   <span className="flash-coupon-pill">
@@ -129,11 +136,7 @@ export default function OfferBanner({ offer }) {
                 to={currentOffer.ctaLink || '/collections'}
                 className="btn-flash-action"
               >
-                <span>
-                  {currentOffer.ctaText?.includes('Sofa')
-                    ? 'Shop All Offers'
-                    : currentOffer.ctaText || 'Shop All Offers'}
-                </span>
+                <span>{currentOffer.ctaText || 'Shop All Offers'}</span>
                 <ArrowRight size={15} />
               </Link>
             </div>

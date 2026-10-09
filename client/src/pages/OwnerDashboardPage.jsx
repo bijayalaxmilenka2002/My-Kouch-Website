@@ -180,39 +180,45 @@ export default function OwnerDashboardPage() {
         getAllEnquiries(token).catch(() => ({ enquiries: [], counts: {} })),
       ]);
 
-      // 2. Resolve Products with robust local storage persistence
-      let resolvedProducts = FALLBACK_PRODUCTS;
-      if (prodRes?.products && prodRes.products.length > 0) {
-        resolvedProducts = prodRes.products;
-      }
+      // 2. Resolve Products with robust database synchronization
+      let resolvedProducts = (prodRes?.products && prodRes.products.length > 0) ? prodRes.products : FALLBACK_PRODUCTS;
 
-      // Check locally cached / user-added products in localStorage
+      // Check locally cached / user-added products in localStorage and merge cleanly
       try {
         const localCustomRaw = localStorage.getItem('mykouch_custom_products');
         if (localCustomRaw) {
           const localCustom = JSON.parse(localCustomRaw);
           if (Array.isArray(localCustom) && localCustom.length > 0) {
-            // Merge custom products
-            resolvedProducts = localCustom;
+            const baseMap = new Map(resolvedProducts.map((p) => [p._id, p]));
+            localCustom.forEach((lp) => {
+              if (lp._id && !baseMap.has(lp._id)) {
+                resolvedProducts.push(lp);
+              }
+            });
           }
         }
       } catch (e) {
         // ignore
       }
       setProducts(resolvedProducts);
-
-      // 3. Resolve Offers
-      let resolvedOffers = offerRes?.offers || [];
       try {
-        const localOffersRaw = localStorage.getItem('mykouch_custom_offers');
-        if (localOffersRaw) {
-          const localOffers = JSON.parse(localOffersRaw);
-          if (Array.isArray(localOffers) && localOffers.length > 0) {
-            resolvedOffers = localOffers;
+        localStorage.setItem('mykouch_custom_products', JSON.stringify(resolvedProducts));
+      } catch (e) {}
+
+      // 3. Resolve Offers: Database is primary source of truth
+      let resolvedOffers = (offerRes?.offers && offerRes.offers.length > 0) ? offerRes.offers : [];
+      if (resolvedOffers.length === 0) {
+        try {
+          const localOffersRaw = localStorage.getItem('mykouch_custom_offers');
+          if (localOffersRaw) {
+            const localOffers = JSON.parse(localOffersRaw);
+            if (Array.isArray(localOffers) && localOffers.length > 0) {
+              resolvedOffers = localOffers;
+            }
           }
+        } catch (e) {
+          // ignore
         }
-      } catch (e) {
-        // ignore
       }
       if (resolvedOffers.length === 0) {
         resolvedOffers = [
@@ -231,6 +237,9 @@ export default function OwnerDashboardPage() {
         ];
       }
       setOffers(resolvedOffers);
+      try {
+        localStorage.setItem('mykouch_custom_offers', JSON.stringify(resolvedOffers));
+      } catch (e) {}
 
       // 4. Resolve Enquiries
       let resolvedEnquiries = enqRes?.enquiries || [];
@@ -330,11 +339,12 @@ export default function OwnerDashboardPage() {
     setTimeout(() => setStatusMessage(''), 4500);
   };
 
-  // Helper to persist custom products locally
+  // Helper to persist custom products locally and broadcast to client
   const persistProducts = (updated) => {
     setProducts(updated);
     try {
       localStorage.setItem('mykouch_custom_products', JSON.stringify(updated));
+      window.dispatchEvent(new Event('mykouch_sync'));
     } catch (e) {
       console.warn('Could not cache products to localStorage:', e);
     }
@@ -603,14 +613,16 @@ export default function OwnerDashboardPage() {
 
       if (editingProduct) {
         // Try remote API update
+        let savedProduct = null;
         try {
-          await updateProduct(editingProduct._id, payload, token);
+          const apiRes = await updateProduct(editingProduct._id, payload, token);
+          if (apiRes?.product) savedProduct = apiRes.product;
         } catch (apiErr) {
           console.warn('API updateProduct bypassed for local persistence:', apiErr.message);
         }
 
         const updatedList = products.map((p) =>
-          p._id === editingProduct._id ? { ...p, ...payload } : p
+          p._id === editingProduct._id ? (savedProduct || { ...p, ...payload }) : p
         );
         persistProducts(updatedList);
         showNotification(`Product "${productForm.name}" updated successfully!`);
@@ -664,13 +676,15 @@ export default function OwnerDashboardPage() {
   const handleToggleProductState = async (id, field, currentValue) => {
     try {
       const updatedValue = !currentValue;
+      let savedProduct = null;
       try {
-        await updateProduct(id, { [field]: updatedValue }, token);
+        const apiRes = await updateProduct(id, { [field]: updatedValue }, token);
+        if (apiRes?.product) savedProduct = apiRes.product;
       } catch (apiErr) {
         console.warn('API toggle bypassed for local persistence:', apiErr.message);
       }
       const updated = products.map((p) =>
-        p._id === id ? { ...p, [field]: updatedValue } : p
+        p._id === id ? (savedProduct || { ...p, [field]: updatedValue }) : p
       );
       persistProducts(updated);
       showNotification(`Updated ${field}.`);
@@ -720,16 +734,21 @@ export default function OwnerDashboardPage() {
     }
 
     try {
+      let savedOffer = null;
       if (editingOffer) {
         try {
-          await updateOffer(editingOffer._id, offerForm, token);
-        } catch (e) {}
+          const apiRes = await updateOffer(editingOffer._id, offerForm, token);
+          if (apiRes?.offer) savedOffer = apiRes.offer;
+        } catch (apiErr) {
+          console.warn('API updateOffer failed, falling back:', apiErr.message);
+        }
         const updated = offers.map((o) =>
-          o._id === editingOffer._id ? { ...o, ...offerForm } : o
+          o._id === editingOffer._id ? (savedOffer || { ...o, ...offerForm }) : o
         );
         setOffers(updated);
         localStorage.setItem('mykouch_custom_offers', JSON.stringify(updated));
-        showNotification('Offer banner updated successfully!');
+        window.dispatchEvent(new Event('mykouch_sync'));
+        showNotification('Offer banner updated successfully and live on homepage!');
       } else {
         let newOffer = { ...offerForm, _id: 'off_' + Date.now() };
         try {
@@ -737,10 +756,13 @@ export default function OwnerDashboardPage() {
           if (apiRes?.offer) {
             newOffer = apiRes.offer;
           }
-        } catch (e) {}
-        const updated = [newOffer, ...offers];
+        } catch (apiErr) {
+          console.warn('API createOffer failed, falling back:', apiErr.message);
+        }
+        const updated = [newOffer, ...offers.map(o => ({ ...o, isActive: false }))];
         setOffers(updated);
         localStorage.setItem('mykouch_custom_offers', JSON.stringify(updated));
+        window.dispatchEvent(new Event('mykouch_sync'));
         showNotification('New promotional offer published to Homepage!');
       }
       setIsOfferModalOpen(false);
@@ -758,10 +780,29 @@ export default function OwnerDashboardPage() {
         const updated = offers.filter((o) => o._id !== id);
         setOffers(updated);
         localStorage.setItem('mykouch_custom_offers', JSON.stringify(updated));
+        window.dispatchEvent(new Event('mykouch_sync'));
         showNotification('Offer deleted.');
       } catch (err) {
         alert('Failed to delete offer: ' + err.message);
       }
+    }
+  };
+
+  const handleToggleOfferActive = async (off) => {
+    try {
+      const updatedActive = !off.isActive;
+      try {
+        await updateOffer(off._id, { isActive: updatedActive }, token);
+      } catch (e) {}
+      const updated = offers.map((o) =>
+        o._id === off._id ? { ...o, isActive: updatedActive } : (updatedActive ? { ...o, isActive: false } : o)
+      );
+      setOffers(updated);
+      localStorage.setItem('mykouch_custom_offers', JSON.stringify(updated));
+      window.dispatchEvent(new Event('mykouch_sync'));
+      showNotification(`Offer set to ${updatedActive ? 'Live on Website' : 'Draft'}.`);
+    } catch (err) {
+      alert('Failed to toggle offer: ' + err.message);
     }
   };
 
@@ -1374,9 +1415,15 @@ export default function OwnerDashboardPage() {
                       </td>
                       <td>{off.ctaText}</td>
                       <td>
-                        <span className={`table-badge ${off.isActive ? 'badge-status-completed' : 'badge-status-new'}`}>
-                          {off.isActive ? 'Live on Website' : 'Draft / Inactive'}
-                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleOfferActive(off)}
+                          className={`table-badge ${off.isActive ? 'badge-status-completed' : 'badge-status-new'}`}
+                          style={{ cursor: 'pointer', border: 'none', background: off.isActive ? '#DCFCE7' : '#F3F4F6' }}
+                          title="Click to toggle Live or Draft"
+                        >
+                          {off.isActive ? '● Live on Website' : '○ Draft / Inactive'}
+                        </button>
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <div className="table-action-group" style={{ justifyContent: 'flex-end' }}>
