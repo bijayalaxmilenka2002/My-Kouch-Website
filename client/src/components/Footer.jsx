@@ -119,7 +119,7 @@ export default function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noreferrer"
-                className="footer-social-btn"
+                className="footer-social-btn footer-social-link"
                 aria-label="Instagram"
               >
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -132,7 +132,7 @@ export default function Footer() {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noreferrer"
-                className="footer-social-btn"
+                className="footer-social-btn footer-social-link"
                 aria-label="Facebook"
               >
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -143,7 +143,7 @@ export default function Footer() {
                 href="https://youtube.com"
                 target="_blank"
                 rel="noreferrer"
-                className="footer-social-btn"
+                className="footer-social-btn footer-social-link"
                 aria-label="YouTube"
               >
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

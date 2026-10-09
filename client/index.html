@@ -50,18 +50,6 @@
     <link rel="icon" type="image/png" href="/assets/logo/logo.png" />
     <link rel="apple-touch-icon" href="/assets/logo/logo.png" />
 
-    <!-- Immediate Redirect to Home Page on Browser Refresh -->
-    <script>
-      (function() {
-        try {
-          var navEntries = window.performance && window.performance.getEntriesByType ? window.performance.getEntriesByType('navigation') : [];
-          var isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || (window.performance && window.performance.navigation && window.performance.navigation.type === 1);
-          if (isReload && (window.location.pathname !== '/' || window.location.search !== '' || window.location.hash !== '')) {
-            window.location.replace('/');
-          }
-        } catch(e) {}
-      })();
-    </script>
 
     <!-- Google Fonts: Outfit (modern geometric), Cormorant Garamond & Playfair Display (editorial designer serifs) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

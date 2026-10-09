@@ -99,6 +99,7 @@ export default function ProductCard({ product }) {
             to={`/product/${product._id || product.slug}`}
             className="btn btn-light btn-sm"
           >
+            <Sliders size={13} />
             <span>Details</span>
           </Link>
           <button

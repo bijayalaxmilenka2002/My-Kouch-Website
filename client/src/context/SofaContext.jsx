@@ -9,6 +9,18 @@ export const SofaProvider = ({ children }) => {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
   const [enquiryProduct, setEnquiryProduct] = useState(null);
 
+  React.useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('modal') === 'customize' || params.get('customize') === 'true') {
+        setIsCustomizeOpen(true);
+      }
+      if (params.get('modal') === 'enquire' || params.get('enquire') === 'true') {
+        setIsEnquiryOpen(true);
+      }
+    } catch (e) {}
+  }, []);
+
   const openCustomizeModal = (product = null) => {
     setCustomSofaProduct(product);
     setIsCustomizeOpen(true);

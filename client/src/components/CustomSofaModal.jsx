@@ -203,6 +203,8 @@ export default function CustomSofaModal() {
   const isMattress = formData.category === 'Mattress & Beddings';
   const isPillow = formData.category === 'Pillows & Cushions';
 
+  if (!isCustomizeOpen) return null;
+
   return (
     <div className="modal-backdrop" onClick={closeCustomizeModal}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>

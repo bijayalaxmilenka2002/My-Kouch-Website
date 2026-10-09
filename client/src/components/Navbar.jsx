@@ -114,6 +114,14 @@ export default function Navbar() {
 
   // Close dropdowns on route changes
   useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('menu') === 'open' || params.get('drawer') === 'open') {
+        setMobileMenuOpen(true);
+        return;
+      }
+    } catch (e) {}
+
     setMobileMenuOpen(false);
     setSofaDropdownOpen(false);
     setMattressDropdownOpen(false);

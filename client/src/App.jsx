@@ -26,20 +26,6 @@ function AppLayout() {
   const navigate = useNavigate();
   const isOwnerRoute = location.pathname.startsWith('/owner');
 
-  // When someone refreshes the page, redirect to home page
-  React.useEffect(() => {
-    try {
-      const navEntries = window.performance?.getEntriesByType?.('navigation') || [];
-      const isReload = navEntries.length > 0 && navEntries[0].type === 'reload';
-      const isLegacyReload = window.performance?.navigation?.type === 1;
-
-      if ((isReload || isLegacyReload) && !location.pathname.startsWith('/owner') && (location.pathname !== '/' || location.search !== '' || location.hash !== '')) {
-        navigate('/', { replace: true });
-      }
-    } catch (e) {
-      // ignore
-    }
-  }, []);
 
   // Classy scroll-triggered reveal observer
   React.useEffect(() => {
