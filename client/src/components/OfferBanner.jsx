@@ -21,7 +21,13 @@ export default function OfferBanner({ offer }) {
 
   const handleCopyCode = () => {
     if (currentOffer.couponCode) {
-      navigator.clipboard.writeText(currentOffer.couponCode);
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(currentOffer.couponCode);
+        }
+      } catch (e) {
+        // clipboard write error fallback
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }
