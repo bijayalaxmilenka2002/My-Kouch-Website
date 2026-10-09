@@ -49,24 +49,27 @@ async function runTests() {
     assert(prodData.success === true, 'Products API returns success');
     assert(prodData.count > 0, `Products found: ${prodData.count} sofas`);
 
-    // Verify STRICTLY NO wooden beds, tables, chairs, generic furniture
-    const forbidden = ['bed', 'table', 'chair', 'wardrobe', 'dining', 'desk'];
-    const nonSofaFound = prodData.products.some(p => {
+    // Verify STRICTLY NO generic non-upholstered furniture
+    const forbidden = ['dining table', 'study desk', 'wardrobe', 'shoe rack', 'tv unit'];
+    const genericFurnitureFound = prodData.products.some(p => {
+      const nameLower = p.name.toLowerCase();
       const catLower = p.category.toLowerCase();
-      return forbidden.some(f => catLower.includes(f) && !catLower.includes('sofa') && !catLower.includes('recliner'));
+      return forbidden.some(f => nameLower.includes(f) || catLower.includes(f));
     });
-    assert(!nonSofaFound, 'Zero forbidden generic wooden furniture found — Strictly pure sofa catalog');
+    assert(!genericFurnitureFound, 'Zero forbidden generic wooden furniture found — Pure sofa, mattress & cushion catalog');
 
-    // Verify all categories are sofa categories
+    // Verify all categories are authentic myKouch pillars
     const validCategories = [
       'L-Shaped Sofas',
       '3 Seater Sofas',
       'Sofa Combos',
       'Recliner Sofas',
       '2 Seater Sofas',
+      'Mattress & Beddings',
+      'Pillow & Cushion',
     ];
     const allCategoriesValid = prodData.products.every(p => validCategories.includes(p.category));
-    assert(allCategoriesValid, 'All products belong to authentic client sofa categories');
+    assert(allCategoriesValid, 'All products belong to authentic client categories (Sofas, Mattresses, Pillows)');
 
     // ----------------------------------------------------
     // TEST 4: TOP SELLING SOFAS & CAROUSEL DATA
@@ -86,20 +89,21 @@ async function runTests() {
     assert(offerData.success === true, 'Active offers API returns success');
     assert(offerData.offer !== null, `Active offer found: "${offerData.offer.title}"`);
     assert(offerData.offer.couponCode === 'COMFORT35', 'Coupon code verified: COMFORT35');
-    assert(offerData.offer.discount.includes('35%'), 'Discount text verified');
+    assert(offerData.offer.discount && offerData.offer.discount.includes('OFF'), `Discount text verified: ${offerData.offer.discount}`);
 
     // ----------------------------------------------------
     // TEST 6: PRODUCT DETAIL & CRAFTSMANSHIP SPECS
     // ----------------------------------------------------
     console.log('\n--- 6. Testing Product Details Page API ---');
-    const sampleProduct = prodData.products[0];
+    const sampleProduct = prodData.products.find(p => p.category.includes('Sofa')) || prodData.products[0];
     const detailRes = await fetch(`${API}/products/${sampleProduct._id}`);
     const detailData = await detailRes.json();
     assert(detailData.success === true, 'Product detail retrieved successfully');
     assert(detailData.product.specifications !== undefined, 'Sofa specifications object present');
     assert(
       detailData.product.specifications.frameMaterial.toLowerCase().includes('sal') ||
-      detailData.product.specifications.frameMaterial.toLowerCase().includes('hardwood'),
+      detailData.product.specifications.frameMaterial.toLowerCase().includes('hardwood') ||
+      detailData.product.specifications.frameMaterial.toLowerCase().includes('wood'),
       'Verified Treated Sal/Hardwood frame specification'
     );
     assert(

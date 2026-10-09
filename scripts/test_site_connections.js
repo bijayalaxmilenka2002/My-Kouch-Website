@@ -1,8 +1,11 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import mongoose from '../server/node_modules/mongoose/index.js';
+import dotenv from '../server/node_modules/dotenv/lib/main.js';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config({ path: path.resolve('server/.env') });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../server/.env') });
 
 async function checkConnections() {
   console.log('===============================================================');
@@ -16,7 +19,7 @@ async function checkConnections() {
   try {
     const res = await fetch('http://localhost:5000/api/health');
     const data = await res.json();
-    const passed = res.ok && data.status === 'OK';
+    const passed = res.ok && (data.status === 'online' || data.status === 'OK');
     report.push({ service: 'Local Server Health', url: 'http://localhost:5000/api/health', status: res.status, passed, data });
     console.log(`[Local Server] Status: ${res.status} | Passed: ${passed} | DB State: ${data.database}`);
   } catch (err) {
@@ -99,7 +102,7 @@ async function checkConnections() {
     const res = await fetch('https://mykouch-backend.onrender.com/api/health', { signal: AbortSignal.timeout(15000) });
     const latency = Date.now() - start;
     const data = await res.json();
-    const passed = res.ok && data.status === 'OK';
+    const passed = res.ok && (data.status === 'online' || data.status === 'OK');
     report.push({ service: 'Render Backend Health', url: 'https://mykouch-backend.onrender.com/api/health', status: res.status, latencyMs: latency, passed, data });
     console.log(`[Render Backend Health] Status: ${res.status} | Latency: ${latency}ms | DB: ${data.database}`);
   } catch (err) {

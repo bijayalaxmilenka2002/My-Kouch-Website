@@ -616,7 +616,7 @@ export default function OwnerDashboardPage() {
         showNotification(`Product "${productForm.name}" updated successfully!`);
       } else {
         const newId = 'prod_' + Date.now();
-        const newProductItem = {
+        let newProductItem = {
           ...payload,
           _id: newId,
           slug: payload.name.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') + '-' + Date.now().toString().slice(-4),
@@ -626,7 +626,10 @@ export default function OwnerDashboardPage() {
         };
 
         try {
-          await createProduct(newProductItem, token);
+          const apiRes = await createProduct(payload, token);
+          if (apiRes?.product) {
+            newProductItem = apiRes.product;
+          }
         } catch (apiErr) {
           console.warn('API createProduct bypassed for local persistence:', apiErr.message);
         }
@@ -728,9 +731,12 @@ export default function OwnerDashboardPage() {
         localStorage.setItem('mykouch_custom_offers', JSON.stringify(updated));
         showNotification('Offer banner updated successfully!');
       } else {
-        const newOffer = { ...offerForm, _id: 'off_' + Date.now() };
+        let newOffer = { ...offerForm, _id: 'off_' + Date.now() };
         try {
-          await createOffer(newOffer, token);
+          const apiRes = await createOffer(offerForm, token);
+          if (apiRes?.offer) {
+            newOffer = apiRes.offer;
+          }
         } catch (e) {}
         const updated = [newOffer, ...offers];
         setOffers(updated);

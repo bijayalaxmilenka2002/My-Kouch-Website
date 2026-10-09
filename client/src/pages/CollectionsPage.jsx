@@ -81,13 +81,19 @@ export default function CollectionsPage() {
           baseList = FALLBACK_PRODUCTS;
         }
 
-        // Merge any products added/edited in owner portal
+        // Merge any products added/edited in owner portal with backend products
         try {
           const localCustomRaw = localStorage.getItem('mykouch_custom_products');
           if (localCustomRaw) {
             const localCustom = JSON.parse(localCustomRaw);
             if (Array.isArray(localCustom) && localCustom.length > 0) {
-              baseList = localCustom.filter((p) => p.isActive !== false);
+              const localMap = new Map(localCustom.map((p) => [p._id, p]));
+              const merged = baseList.map((p) => localMap.get(p._id) || p);
+              const baseIds = new Set(baseList.map((p) => p._id));
+              localCustom.forEach((p) => {
+                if (!baseIds.has(p._id)) merged.unshift(p);
+              });
+              baseList = merged.filter((p) => p.isActive !== false);
             }
           }
         } catch (e) {

@@ -1,7 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-export default defineConfig({
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const realRoot = fs.existsSync(__dirname) ? fs.realpathSync(__dirname) : __dirname;
+
+export default defineConfig(({ command }) => ({
+  ...(command === 'build' ? { root: realRoot } : {}),
   plugins: [react()],
   server: {
     port: 5173,
@@ -19,4 +27,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

@@ -82,7 +82,8 @@ export default function EnquiryContactModal() {
         phone: formData.phone.trim(),
         email: formData.email.trim(),
         product: formData.product || 'General Sofa Enquiry',
-        enquiryType: 'General Contact',
+        productId: enquiryProduct?._id || null,
+        enquiryType: formData.enquiryType || 'General Contact',
         message: formData.message.trim(),
       };
 

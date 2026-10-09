@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Enquiry from '../models/Enquiry.js';
 
 // @desc    Submit a new customer enquiry or customization request
@@ -28,8 +29,8 @@ export const createEnquiry = async (req, res) => {
       phone,
       email: email || '',
       product: product || 'Custom Sofa Requirement',
-      productId: productId || null,
-      enquiryType: enquiryType || 'Customization',
+      productId: productId ? String(productId) : null,
+      enquiryType: enquiryType || 'General Contact',
       customizationDetails: customizationDetails || {},
       message: message || '',
       status: 'New',
@@ -107,6 +108,13 @@ export const updateEnquiryStatus = async (req, res) => {
     const { id } = req.params;
     const { status, ownerNotes } = req.body;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid enquiry ID format',
+      });
+    }
+
     const enquiry = await Enquiry.findById(id);
 
     if (!enquiry) {
@@ -140,6 +148,14 @@ export const updateEnquiryStatus = async (req, res) => {
 export const deleteEnquiry = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid enquiry ID format',
+      });
+    }
+
     const enquiry = await Enquiry.findByIdAndDelete(id);
 
     if (!enquiry) {

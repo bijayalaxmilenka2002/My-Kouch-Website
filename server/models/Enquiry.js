@@ -23,23 +23,17 @@ const enquirySchema = new mongoose.Schema(
       trim: true,
     },
     productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      type: String,
       default: null,
     },
     enquiryType: {
       type: String,
-      enum: ['Customization', 'Product Enquiry', 'Dealership', 'General Contact'],
-      default: 'Customization',
+      default: 'General Contact',
+      trim: true,
     },
     customizationDetails: {
-      sofaType: { type: String, default: '' },
-      seatingPreference: { type: String, default: '' },
-      preferredSize: { type: String, default: '' },
-      preferredColor: { type: String, default: '' },
-      fabricPreference: { type: String, default: '' },
-      roomDimensions: { type: String, default: '' },
-      customRequirements: { type: String, default: '' },
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
     },
     message: {
       type: String,

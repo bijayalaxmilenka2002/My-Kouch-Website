@@ -16,7 +16,7 @@ async function checkConnections() {
   try {
     const res = await fetch('http://localhost:5000/api/health');
     const data = await res.json();
-    const passed = res.ok && data.status === 'OK';
+    const passed = res.ok && (data.status === 'online' || data.status === 'OK');
     report.push({ service: 'Local Server Health', url: 'http://localhost:5000/api/health', status: res.status, passed, data });
     console.log(`[Local Server] Status: ${res.status} | Passed: ${passed} | DB State: ${data.database}`);
   } catch (err) {
@@ -99,7 +99,7 @@ async function checkConnections() {
     const res = await fetch('https://mykouch-backend.onrender.com/api/health', { signal: AbortSignal.timeout(20000) });
     const latency = Date.now() - start;
     const data = await res.json();
-    const passed = res.ok && data.status === 'OK';
+    const passed = res.ok && (data.status === 'online' || data.status === 'OK');
     report.push({ service: 'Render Backend Health', url: 'https://mykouch-backend.onrender.com/api/health', status: res.status, latencyMs: latency, passed, data });
     console.log(`[Render Backend Health] Status: ${res.status} | Latency: ${latency}ms | DB: ${data.database}`);
   } catch (err) {

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 
 import authRoutes from './routes/authRoutes.js';
@@ -54,6 +55,7 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'online',
     brand: 'myKouch Luxury Sofas',
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString(),
   });
 });

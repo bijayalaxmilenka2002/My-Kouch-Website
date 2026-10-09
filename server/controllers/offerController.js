@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Offer from '../models/Offer.js';
 
 // @desc    Get active offer for homepage
@@ -95,6 +96,14 @@ export const createOffer = async (req, res) => {
 export const updateOffer = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid offer ID format',
+      });
+    }
+
     const offer = await Offer.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
@@ -126,6 +135,14 @@ export const updateOffer = async (req, res) => {
 export const deleteOffer = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid offer ID format',
+      });
+    }
+
     const offer = await Offer.findByIdAndDelete(id);
 
     if (!offer) {

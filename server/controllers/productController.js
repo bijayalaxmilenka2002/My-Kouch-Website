@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 
 // Helper to create slug
@@ -203,11 +204,30 @@ export const createProduct = async (req, res) => {
       });
     }
 
+    const slugCategoryMap = {
+      'mattress-beddings': 'Mattress & Beddings',
+      'mattresses & beddings': 'Mattress & Beddings',
+      'mattress & beddings': 'Mattress & Beddings',
+      'mattresses': 'Mattress & Beddings',
+      'pillow-cushion': 'Pillow & Cushion',
+      'pillows-cushions': 'Pillow & Cushion',
+      'pillows & cushions': 'Pillow & Cushion',
+      'pillow & cushion': 'Pillow & Cushion',
+      'pillows': 'Pillow & Cushion',
+      'cushions': 'Pillow & Cushion',
+      'l-shaped-sofas': 'L-Shaped Sofas',
+      '3-seater-sofas': '3 Seater Sofas',
+      'sofa-combos': 'Sofa Combos',
+      'recliner-sofas': 'Recliner Sofas',
+      '2-seater-sofas': '2 Seater Sofas',
+    };
+    const finalCategory = slugCategoryMap[category.toLowerCase()] || category;
+
     const product = new Product({
       name,
       slug,
       description,
-      category,
+      category: finalCategory,
       subType: subType || '',
       images: parsedImages,
       price: Number(price),
@@ -216,7 +236,7 @@ export const createProduct = async (req, res) => {
       dimensions: dimensions || 'Standard Luxury Fit',
       colors: Array.isArray(colors) ? colors : typeof colors === 'string' ? colors.split(',').map(s => s.trim()) : undefined,
       materials: Array.isArray(materials) ? materials : typeof materials === 'string' ? materials.split(',').map(s => s.trim()) : undefined,
-      seatingCapacity: seatingCapacity || (category.includes('Sofa') ? '3 Seater' : ''),
+      seatingCapacity: seatingCapacity || (finalCategory.includes('Sofa') ? '3 Seater' : ''),
       badge: badge || (isNewArrival ? 'New Arrival' : ''),
       isNewArrival: isNewArrival === true || isNewArrival === 'true',
       isTopSelling: isTopSelling === true || isTopSelling === 'true',
@@ -227,7 +247,7 @@ export const createProduct = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Sofa product created successfully',
+      message: 'Product created successfully',
       product,
     });
   } catch (error) {
@@ -239,13 +259,19 @@ export const createProduct = async (req, res) => {
   }
 };
 
-// @desc    Update sofa product (Owner only)
+// @desc    Update product (Owner only)
 // @route   PUT /api/products/:id
 // @access  Private (Owner)
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    let product = await Product.findById(id);
+    let product;
+
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      product = await Product.findById(id);
+    } else {
+      product = await Product.findOne({ slug: id });
+    }
 
     if (!product) {
       return res.status(404).json({
@@ -280,7 +306,7 @@ export const updateProduct = async (req, res) => {
       updateData.discount = Math.round(((updateData.originalPrice - (updateData.price || product.price)) / updateData.originalPrice) * 100);
     }
 
-    product = await Product.findByIdAndUpdate(id, updateData, {
+    product = await Product.findByIdAndUpdate(product._id, updateData, {
       new: true,
       runValidators: true,
     });
@@ -299,13 +325,19 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-// @desc    Delete sofa product (Owner only)
+// @desc    Delete product (Owner only)
 // @route   DELETE /api/products/:id
 // @access  Private (Owner)
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findByIdAndDelete(id);
+    let product;
+
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      product = await Product.findByIdAndDelete(id);
+    } else {
+      product = await Product.findOneAndDelete({ slug: id });
+    }
 
     if (!product) {
       return res.status(404).json({
