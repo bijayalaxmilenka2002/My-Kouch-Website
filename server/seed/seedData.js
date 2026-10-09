@@ -990,6 +990,20 @@ const seedTestimonials = [
     review: 'From color selection to exact room measurement, the team was patient and professional. The sofa arrived ahead of schedule, beautifully packed and flawless in stitching. Highly recommend myKouch for anyone looking for authentic sofa manufacturing.',
     rating: 5,
   },
+  {
+    customerName: 'Dr. Amitav Patnaik',
+    location: 'IRC Village, Bhubaneswar',
+    sofaPurchased: 'Orthopedic Dual-Comfort King Mattress',
+    review: 'The orthopedic mattress gives the exact spinal support we needed after long work days. Zero motion transfer and cooling bamboo fabric cover make sleep completely restorative. Truly hospital-grade ergonomic support.',
+    rating: 5,
+  },
+  {
+    customerName: 'Smita & Manoj Rout',
+    location: 'Bhimatangi, Bhubaneswar',
+    sofaPurchased: 'Artisanal Emerald & Terracotta Cushion Suite',
+    review: 'The designer cushions elevated our entire living room look instantly! The rich velvet texture and geometric gold embroidery are even prettier in person than on the website. Super plush filling.',
+    rating: 5,
+  },
 ];
 
 const seedOffer = {

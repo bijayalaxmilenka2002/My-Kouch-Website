@@ -16,6 +16,8 @@ import { useSofa } from '../context/SofaContext';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [navVisible, setNavVisible] = useState(true);
+  const lastScrollYRef = useRef(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sofaDropdownOpen, setSofaDropdownOpen] = useState(false);
   const [mattressDropdownOpen, setMattressDropdownOpen] = useState(false);
@@ -105,10 +107,34 @@ export default function Navbar() {
   };
 
   useEffect(() => {
+    lastScrollYRef.current = window.scrollY;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
+      const currentScrollY = window.scrollY;
+      const isDown = currentScrollY > lastScrollYRef.current;
+      const scrollDiff = Math.abs(currentScrollY - lastScrollYRef.current);
+
+      setIsScrolled(currentScrollY > 40);
+
+      // 1. Top of page zone (always show static/initial navbar)
+      if (currentScrollY <= 80) {
+        setNavVisible(true);
+      } else if (isDown && currentScrollY > 120 && scrollDiff > 5) {
+        // 2. Scrolling DOWN: smoothly hide navbar to eliminate distraction
+        setNavVisible(false);
+        // Safely close desktop hover menus
+        setSofaDropdownOpen(false);
+        setMattressDropdownOpen(false);
+        setPillowDropdownOpen(false);
+      } else if (!isDown && scrollDiff > 5) {
+        // 3. Scrolling UP: smoothly reveal luxury sticky navbar
+        setNavVisible(true);
+      }
+
+      lastScrollYRef.current = currentScrollY;
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -187,8 +213,12 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Main Sticky Navbar */}
-      <header className={`site-header ${isScrolled ? 'scrolled' : ''}`}>
+      {/* Main Sticky Navbar (Auto-hides on scroll down, reveals smoothly on scroll up) */}
+      <header
+        className={`site-header ${isScrolled ? 'scrolled' : ''} ${
+          !navVisible && !mobileMenuOpen ? 'nav-hidden' : 'nav-visible'
+        }`}
+      >
         <div className="container nav-container">
           {/* Logo with Client Branding */}
           <Link to="/" className="nav-brand" aria-label="myKouch Home">
@@ -377,7 +407,7 @@ export default function Navbar() {
                   role="menuitem"
                 >
                   <div className="nav-dropdown-icon">
-                    <img src="/assets/mattresses/pocket_spring_hybrid_hero.jpg" alt="" />
+                    <img src="/assets/mattresses/grand_luxury_master_bed_mattress.jpg" alt="" />
                   </div>
                   <div className="nav-dropdown-text">
                     <span className="nav-dropdown-title">All Mattresses &amp; Beddings</span>
@@ -488,7 +518,7 @@ export default function Navbar() {
                   role="menuitem"
                 >
                   <div className="nav-dropdown-icon">
-                    <img src="/assets/pillows/bohemian_macrame_tufted_tassel_cushion_suite.jpg" alt="" />
+                    <img src="/assets/pillows/bespoke_emerald_terracotta_cushion_ensemble.jpg" alt="" />
                   </div>
                   <div className="nav-dropdown-text">
                     <span className="nav-dropdown-title">All Pillows &amp; Cushions</span>

@@ -11,11 +11,12 @@ import AboutSection from '../components/AboutSection';
 import { getProducts, getActiveOffer, getTestimonials } from '../services/api';
 import SEO from '../components/SEO';
 import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
+import { FALLBACK_TESTIMONIALS } from '../data/fallbackTestimonials';
 
 export default function HomePage() {
   const [products, setProducts] = useState(FALLBACK_PRODUCTS);
   const [activeOffer, setActiveOffer] = useState(null);
-  const [testimonials, setTestimonials] = useState([]);
+  const [testimonials, setTestimonials] = useState(FALLBACK_TESTIMONIALS);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
