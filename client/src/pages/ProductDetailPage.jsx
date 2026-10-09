@@ -12,6 +12,7 @@ import {
   Sparkles,
   ArrowRight,
   Phone,
+  Armchair,
 } from 'lucide-react';
 import { getProductById, getImageUrl } from '../services/api';
 import { useSofa } from '../context/SofaContext';
@@ -27,6 +28,7 @@ export default function ProductDetailPage() {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState('');
+  const [isColorTintActive, setIsColorTintActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -44,11 +46,20 @@ export default function ProductDetailPage() {
             setSelectedColor(res.product.colors[0]);
           }
         } else {
-          // Check fallback
-          const fb = FALLBACK_PRODUCTS.find((p) => p._id === id || p.slug === id);
+          // Check fallback and local custom products
+          let candidateList = FALLBACK_PRODUCTS;
+          try {
+            const localCustomRaw = localStorage.getItem('mykouch_custom_products');
+            if (localCustomRaw) {
+              const localCustom = JSON.parse(localCustomRaw);
+              if (Array.isArray(localCustom)) candidateList = [...localCustom, ...FALLBACK_PRODUCTS];
+            }
+          } catch (e) {}
+
+          const fb = candidateList.find((p) => p._id === id || p.slug === id);
           if (fb) {
             setProduct(fb);
-            setRelatedProducts(FALLBACK_PRODUCTS.filter((p) => p._id !== fb._id && p.category === fb.category).slice(0, 4));
+            setRelatedProducts(candidateList.filter((p) => p._id !== fb._id && p.category === fb.category).slice(0, 4));
             setActiveImageIndex(0);
             if (fb.colors && fb.colors.length > 0) setSelectedColor(fb.colors[0]);
           } else {
@@ -56,11 +67,20 @@ export default function ProductDetailPage() {
           }
         }
       } catch (err) {
-        // If API fails during Render cold-start, check fallback products
-        const fb = FALLBACK_PRODUCTS.find((p) => p._id === id || p.slug === id);
+        // If API fails during Render cold-start, check fallback and custom products
+        let candidateList = FALLBACK_PRODUCTS;
+        try {
+          const localCustomRaw = localStorage.getItem('mykouch_custom_products');
+          if (localCustomRaw) {
+            const localCustom = JSON.parse(localCustomRaw);
+            if (Array.isArray(localCustom)) candidateList = [...localCustom, ...FALLBACK_PRODUCTS];
+          }
+        } catch (e) {}
+
+        const fb = candidateList.find((p) => p._id === id || p.slug === id);
         if (fb) {
           setProduct(fb);
-          setRelatedProducts(FALLBACK_PRODUCTS.filter((p) => p._id !== fb._id && p.category === fb.category).slice(0, 4));
+          setRelatedProducts(candidateList.filter((p) => p._id !== fb._id && p.category === fb.category).slice(0, 4));
           setActiveImageIndex(0);
           if (fb.colors && fb.colors.length > 0) setSelectedColor(fb.colors[0]);
         } else {
@@ -111,29 +131,73 @@ export default function ProductDetailPage() {
 
   const specs = product.specifications || {};
 
+  const isBedding = product.category?.toLowerCase().includes('mattress') || product.category?.toLowerCase().includes('bedding');
+  const isCushion = product.category?.toLowerCase().includes('pillow') || product.category?.toLowerCase().includes('cushion');
+
+  const warrantyText = specs.warranty || (
+    isBedding
+      ? '10-Year Direct Factory Sag Warranty'
+      : isCushion
+      ? '2-Year Stitch & Seam Guarantee'
+      : '10-Year Sal Wood Frame Warranty'
+  );
+
+  const specsTitle = isBedding
+    ? 'Detailed Mattress Specifications & Sleep Science'
+    : isCushion
+    ? 'Detailed Cushion Specifications & Materials'
+    : 'Detailed Sofa Specifications';
+
+  const frameLabel = isBedding
+    ? 'Core & Spring Architecture'
+    : isCushion
+    ? 'Shell & Stitching Structure'
+    : 'Frame Structure';
+
+  const foamLabel = isBedding
+    ? 'Comfort & Foam Density'
+    : isCushion
+    ? 'Filling & Micro-Fiber Loft'
+    : 'Foam & Cushioning Density';
+
+  const suspensionLabel = isBedding
+    ? 'Ticking & Quilted Cover'
+    : isCushion
+    ? 'Zipper & Seam Closure'
+    : 'Suspension Architecture';
+
+  const dimensionsLabel = isCushion
+    ? 'Dimensions & Set Size'
+    : isBedding
+    ? 'Standard Dimensions'
+    : 'Overall Dimensions';
+
   const getColorHex = (name = '') => {
     const n = name.toLowerCase();
-    if (n.includes('emerald') || n.includes('teal')) return '#1B6B5D';
-    if (n.includes('navy') || n.includes('blue')) return '#1B2A47';
-    if (n.includes('terracotta') || n.includes('rust')) return '#C86228';
-    if (n.includes('ivory') || n.includes('cream')) return '#F3EDE2';
-    if (n.includes('charcoal') || n.includes('slate') || n.includes('noir') || n.includes('black')) return '#374151';
-    if (n.includes('grey') || n.includes('gray')) return '#9CA3AF';
-    if (n.includes('champagne') || n.includes('beige') || n.includes('sand')) return '#E5D3B3';
-    if (n.includes('taupe') || n.includes('mocha') || n.includes('brown')) return '#8B6B55';
-    if (n.includes('maroon') || n.includes('bordeaux') || n.includes('wine')) return '#6E1A29';
-    if (n.includes('rose') || n.includes('pink')) return '#D98282';
-    if (n.includes('mustard') || n.includes('gold') || n.includes('ochre')) return '#D9A74A';
-    if (n.includes('sage') || n.includes('olive') || n.includes('green') || n.includes('moss')) return '#5C7A58';
-    return '#C5A059';
+    if (n.includes('emerald') || n.includes('teal')) return '#186455';
+    if (n.includes('navy') || n.includes('blue') || n.includes('sky')) return '#1B355B';
+    if (n.includes('terracotta') || n.includes('rust') || n.includes('orange')) return '#C05621';
+    if (n.includes('ivory') || n.includes('cream') || n.includes('snow') || n.includes('white') || n.includes('alabaster')) return '#EDE7D9';
+    if (n.includes('charcoal') || n.includes('slate') || n.includes('noir') || n.includes('black')) return '#2C353F';
+    if (n.includes('grey') || n.includes('gray') || n.includes('mist')) return '#7B8491';
+    if (n.includes('champagne') || n.includes('beige') || n.includes('sand') || n.includes('oatmeal')) return '#D2B48C';
+    if (n.includes('taupe') || n.includes('mocha') || n.includes('brown') || n.includes('chocolate') || n.includes('coffee')) return '#5C3826';
+    if (n.includes('caramel') || n.includes('tan') || n.includes('toffee') || n.includes('cognac')) return '#9E5B28';
+    if (n.includes('maroon') || n.includes('bordeaux') || n.includes('wine') || n.includes('burgundy')) return '#6E1A29';
+    if (n.includes('rose') || n.includes('pink') || n.includes('blush')) return '#D98282';
+    if (n.includes('mustard') || n.includes('gold') || n.includes('ochre') || n.includes('yellow')) return '#C89434';
+    if (n.includes('sage') || n.includes('olive') || n.includes('green') || n.includes('moss') || n.includes('mint')) return '#4E6B48';
+    return '#A27B5C';
   };
 
-  const handleColorSelect = (colorName, colorIndex) => {
+  const handleColorSelect = (colorName) => {
     setSelectedColor(colorName);
-    if (images.length > 1) {
-      const targetIdx = colorIndex < images.length ? colorIndex : colorIndex % images.length;
-      setActiveImageIndex(targetIdx);
-    }
+    setIsColorTintActive(true);
+    // Preserves the activeImageIndex so the same photograph changes color!
+  };
+
+  const handleResetColor = () => {
+    setIsColorTintActive(false);
   };
 
   const productSchema = product ? {
@@ -194,7 +258,13 @@ export default function ProductDetailPage() {
               <img
                 src={getImageUrl(images[activeImageIndex])}
                 alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  transition: 'filter 0.4s ease, transform 0.4s ease',
+                  filter: isColorTintActive && selectedColor ? 'contrast(1.04) saturate(1.15)' : 'none',
+                }}
                 onError={(e) => {
                   if (!e.target.dataset.triedRelative && e.target.src.includes('/uploads/')) {
                     e.target.dataset.triedRelative = 'true';
@@ -210,8 +280,76 @@ export default function ProductDetailPage() {
                   }
                 }}
               />
+
+              {/* Dynamic Fabric Color Overlay - Changes same image fabric color */}
+              {isColorTintActive && selectedColor && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    pointerEvents: 'none',
+                    backgroundColor: getColorHex(selectedColor),
+                    mixBlendMode: 'color',
+                    opacity: 0.52,
+                    transition: 'background-color 0.4s ease, opacity 0.4s ease',
+                  }}
+                />
+              )}
+
+              {/* Dynamic Highlight Tint for rich depth */}
+              {isColorTintActive && selectedColor && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    pointerEvents: 'none',
+                    backgroundColor: getColorHex(selectedColor),
+                    mixBlendMode: 'soft-light',
+                    opacity: 0.28,
+                    transition: 'background-color 0.4s ease',
+                  }}
+                />
+              )}
+
+              {/* Live Color Swatch Indicator */}
+              {isColorTintActive && selectedColor && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '1rem',
+                    left: '1rem',
+                    background: 'rgba(26, 22, 20, 0.88)',
+                    backdropFilter: 'blur(8px)',
+                    color: '#FFFFFF',
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: 'var(--radius-full)',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+                    zIndex: 2,
+                    border: '1px solid rgba(255,255,255,0.15)',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '12px',
+                      height: '12px',
+                      borderRadius: '50%',
+                      background: getColorHex(selectedColor),
+                      border: '1.5px solid #FFFFFF',
+                      display: 'inline-block',
+                      boxShadow: '0 0 4px rgba(0,0,0,0.3)',
+                    }}
+                  />
+                  <span>Live Preview: {selectedColor}</span>
+                </div>
+              )}
+
               {product.badge && (
-                <span className={`product-badge ${product.badge.toLowerCase().includes('best') ? 'bestseller' : 'new'}`} style={{ top: '1rem', left: '1rem' }}>
+                <span className={`product-badge ${product.badge.toLowerCase().includes('best') ? 'bestseller' : 'new'}`} style={{ top: '1rem', left: '1rem', zIndex: 2 }}>
                   {product.badge}
                 </span>
               )}
@@ -261,6 +399,14 @@ export default function ProductDetailPage() {
               {product.name}
             </h1>
 
+            {/* Seating Capacity (Only shown in Details of the Sofa) */}
+            {product.seatingCapacity && (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.3rem 0.85rem', background: '#F5ECE1', borderRadius: 'var(--radius-full)', color: 'var(--color-espresso)', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.85rem', border: '1px solid rgba(192, 86, 33, 0.25)' }}>
+                <Armchair size={15} color="var(--color-primary)" />
+                <span>{isBedding ? `Size: ${product.seatingCapacity}` : isCushion ? `Configuration: ${product.seatingCapacity}` : `Seating Capacity: ${product.seatingCapacity}`}</span>
+              </div>
+            )}
+
             {/* Rating */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
               <div className="rating-stars" style={{ display: 'flex', gap: '0.15rem' }}>
@@ -300,15 +446,35 @@ export default function ProductDetailPage() {
             {/* Color Palette Options */}
             {product.colors && product.colors.length > 0 && (
               <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-espresso)', marginBottom: '0.5rem' }}>
-                  Available Color Themes: <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>{selectedColor}</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-espresso)' }}>
+                    Available Color Themes: <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>{selectedColor}</span>
+                  </div>
+                  {isColorTintActive && (
+                    <button
+                      type="button"
+                      onClick={handleResetColor}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--color-primary)',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        padding: '0.2rem 0.4rem',
+                        textDecoration: 'underline',
+                      }}
+                    >
+                      Reset to Natural Fabric
+                    </button>
+                  )}
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {product.colors.map((c, cIdx) => (
+                  {product.colors.map((c) => (
                     <button
                       key={c}
                       type="button"
-                      onClick={() => handleColorSelect(c, cIdx)}
+                      onClick={() => handleColorSelect(c)}
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -316,10 +482,10 @@ export default function ProductDetailPage() {
                         padding: '0.45rem 0.95rem',
                         borderRadius: 'var(--radius-sm)',
                         fontSize: '0.84rem',
-                        fontWeight: selectedColor === c ? 700 : 500,
-                        border: selectedColor === c ? '2px solid var(--color-primary)' : '1px solid var(--border-light)',
-                        background: selectedColor === c ? 'var(--color-primary-light)' : '#FFFFFF',
-                        color: selectedColor === c ? 'var(--color-primary)' : 'var(--text-secondary)',
+                        fontWeight: selectedColor === c && isColorTintActive ? 700 : 500,
+                        border: selectedColor === c && isColorTintActive ? '2px solid var(--color-primary)' : '1px solid var(--border-light)',
+                        background: selectedColor === c && isColorTintActive ? 'var(--color-primary-light)' : '#FFFFFF',
+                        color: selectedColor === c && isColorTintActive ? 'var(--color-primary)' : 'var(--text-secondary)',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                       }}
@@ -346,10 +512,20 @@ export default function ProductDetailPage() {
             <div style={{ background: 'var(--color-primary-light)', border: '1px solid var(--color-primary-border)', padding: '1rem 1.25rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-primary)', fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.25rem' }}>
                 <Sliders size={16} />
-                <span>Need Custom Measurements or Specific Fabric?</span>
+                <span>
+                  {isBedding
+                    ? 'Need Custom Mattress Thickness or Cot Dimensions?'
+                    : isCushion
+                    ? 'Need Custom Cushion Sets or Matching Accent Fabrics?'
+                    : 'Need Custom Measurements or Specific Fabric?'}
+                </span>
               </div>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0 }}>
-                We can adjust length, depth, chaise orientation, or foam firmness to suit your room layout.
+                {isBedding
+                  ? 'We custom-craft orthopedic mattresses to fit custom wooden cots, hydraulic bed frames, or specific firmness levels.'
+                  : isCushion
+                  ? 'We hand-tailor cushions in any fabric from our 100+ velvet, bouclé, and linen library to match your living room.'
+                  : 'We can adjust length, depth, chaise orientation, or foam firmness to suit your room layout.'}
               </p>
             </div>
 
@@ -361,11 +537,11 @@ export default function ProductDetailPage() {
                 style={{ flexGrow: 1 }}
               >
                 <Sliders size={18} />
-                <span>Customize &amp; Enquire Now</span>
+                <span>{isBedding || isCushion ? 'Enquire & Customize' : 'Customize & Enquire Now'}</span>
               </button>
 
               <a
-                href={`https://wa.me/918093376990?text=${encodeURIComponent(`Hi myKouch, I am interested in ${product.name} (Price: INR ${product.price}). Please share fabric details and delivery info.`)}`}
+                href={`https://wa.me/918093376990?text=${encodeURIComponent(`Hi myKouch, I am interested in ${product.name} (Price: INR ${product.price}). Please share details and delivery timeline.`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-secondary btn-lg"
@@ -379,7 +555,7 @@ export default function ProductDetailPage() {
             <div className="product-trust-grid">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
                 <ShieldCheck size={18} color="var(--color-primary)" />
-                <span>10-Year Sal Wood Frame Warranty</span>
+                <span>{warrantyText}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
                 <Truck size={18} color="var(--color-primary)" />
@@ -392,45 +568,56 @@ export default function ProductDetailPage() {
         {/* Specifications Table Section */}
         <div style={{ background: '#FFFFFF', padding: '2.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-subtle)', marginBottom: '5rem' }}>
           <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--color-espresso)', marginBottom: '1.5rem' }}>
-            Detailed Sofa Specifications
+            {specsTitle}
           </h2>
 
           <div className="product-specs-grid">
             <div style={{ padding: '1rem', background: 'var(--bg-sand-light)', borderRadius: 'var(--radius-sm)' }}>
               <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>
-                Frame Structure
+                {frameLabel}
               </span>
               <p style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--color-espresso)' }}>
-                {specs.frameMaterial || 'Treated Seasoned Sal & Marandi Hardwood (Anti-Borer Treated)'}
+                {specs.frameMaterial || (isBedding ? 'High-Resilience Aerodynamic HR Core with Pocket Springs' : isCushion ? 'Concealed YKK Zipper with Double-Seam Piping' : 'Treated Seasoned Sal & Marandi Hardwood')}
               </p>
             </div>
 
             <div style={{ padding: '1rem', background: 'var(--bg-sand-light)', borderRadius: 'var(--radius-sm)' }}>
               <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>
-                Foam &amp; Cushioning Density
+                {foamLabel}
               </span>
               <p style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--color-espresso)' }}>
-                {specs.foamDensity || '40-Density High Resilience (HR) Supersoft Foam with Memory Top Layer'}
+                {specs.foamDensity || (isBedding ? '50D Visco-Elastic Cool Gel Memory Foam + 40D HR Base' : isCushion ? '100% Virgin Siliconized Micro-Down Alternative (650 GSM)' : '40-Density High Resilience Supersoft Foam')}
               </p>
             </div>
 
             <div style={{ padding: '1rem', background: 'var(--bg-sand-light)', borderRadius: 'var(--radius-sm)' }}>
               <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>
-                Suspension Architecture
+                {suspensionLabel}
               </span>
               <p style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--color-espresso)' }}>
-                {specs.suspension || 'High-Tensile Carbon Steel Zig-Zag Springs & Reinforced 3" Poly-Webbing'}
+                {specs.suspension || (isBedding ? 'Breathable Organic Bamboo Fabric Euro-Top Quilting' : isCushion ? 'Concealed Bottom Zipper with Anti-Burst Stitching' : 'High-Tensile Carbon Steel Zig-Zag Springs & 3" Webbing')}
               </p>
             </div>
 
             <div style={{ padding: '1rem', background: 'var(--bg-sand-light)', borderRadius: 'var(--radius-sm)' }}>
               <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>
-                Overall Dimensions
+                {dimensionsLabel}
               </span>
               <p style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--color-espresso)' }}>
-                {product.dimensions || 'Standard (Custom lengths & depths available)'}
+                {product.dimensions || 'Standard (Custom sizes available)'}
               </p>
             </div>
+
+            {product.seatingCapacity && (
+              <div style={{ padding: '1rem', background: 'var(--bg-sand-light)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  {isBedding ? 'Mattress Size' : isCushion ? 'Configuration' : 'Sofa Seating Capacity'}
+                </span>
+                <p style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--color-espresso)' }}>
+                  {product.seatingCapacity}
+                </p>
+              </div>
+            )}
 
             <div style={{ padding: '1rem', background: 'var(--bg-sand-light)', borderRadius: 'var(--radius-sm)' }}>
               <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>

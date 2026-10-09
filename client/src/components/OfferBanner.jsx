@@ -8,10 +8,10 @@ export default function OfferBanner({ offer }) {
   const fallbackOffer = {
     title: 'Durga Puja & Festive Offers',
     subtitle: 'Exclusive Factory-Direct Pricing & Free Consultation',
-    description: 'Celebrate Festive Luxury with myKouch Factory Direct Sofas',
+    description: 'Celebrate Festive Luxury with myKouch Factory Direct Sofas, Mattresses & Beddings',
     discount: 'UP TO 45% OFF',
     couponCode: 'COMFORT35',
-    ctaText: 'Explore Sofa Offers',
+    ctaText: 'Shop All Offers',
     ctaLink: '/collections',
     image: '/assets/offers/luxury_chesterfield_offer.jpg',
     isActive: true,
@@ -27,31 +27,31 @@ export default function OfferBanner({ offer }) {
     }
   };
 
-  // Collage images displaying client's premium sofa catalog
+  // Collage images displaying client's complete home comfort catalog
   const collageItems = [
     {
       src: currentOffer.image || '/assets/offers/luxury_chesterfield_offer.jpg',
-      alt: 'Luxury Cognac Chesterfield',
+      alt: 'Luxury Cognac Chesterfield Sofa',
       className: 'flash-frame-1',
     },
     {
-      src: '/assets/sofas/royal_chesterfield_noir.jpg',
-      alt: 'Royal Noir Tufted Sofa',
+      src: '/assets/mattresses/tufted_orthopedic_hybrid_mattress.jpg',
+      alt: 'Imperial Tufted Orthopedic Mattress',
       className: 'flash-frame-2',
     },
     {
-      src: '/assets/sofas/drawing_room_1_10.jpg',
-      alt: 'Celestia Sky Blue Sectional',
+      src: '/assets/pillows/designer_living_throw_cushions.jpg',
+      alt: 'Designer Botanical Throw Cushions',
       className: 'flash-frame-3',
     },
     {
-      src: '/assets/sofas/drawing_room_1_12.jpg',
-      alt: 'Tuscany Quilted L-Shaped Sofa',
+      src: '/assets/sofas/corduroy_luxe_sofa.jpg',
+      alt: 'Ribbed Corduroy Haven Sofa',
       className: 'flash-frame-4',
     },
     {
-      src: '/assets/sofas/drawing_room_1_11.jpg',
-      alt: 'Aurelia Velvet Corner Lounger',
+      src: '/assets/beddings/fobath_luxury_platform_bedding.jpg',
+      alt: 'FOBATH Luxury Bedding Suite',
       className: 'flash-frame-5',
     },
   ];
@@ -123,7 +123,11 @@ export default function OfferBanner({ offer }) {
                 to={currentOffer.ctaLink || '/collections'}
                 className="btn-flash-action"
               >
-                <span>{currentOffer.ctaText || 'Check It Out'}</span>
+                <span>
+                  {currentOffer.ctaText?.includes('Sofa')
+                    ? 'Shop All Offers'
+                    : currentOffer.ctaText || 'Shop All Offers'}
+                </span>
                 <ArrowRight size={15} />
               </Link>
             </div>

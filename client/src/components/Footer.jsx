@@ -48,7 +48,7 @@ export default function Footer() {
               Visit Our Factory Showroom in Bhubaneswar
             </h3>
             <p className="footer-vip-desc">
-              Touch 100+ velvet and bouclé swatches, experience 40D high-resilience foam, or discuss custom measurements directly with our master craftsmen.
+              Touch 100+ luxury fabric swatches, experience orthopedic sleep systems, or discuss custom dimensions directly with our master craftsmen.
             </p>
           </div>
 
@@ -73,9 +73,10 @@ export default function Footer() {
               onClick={() => openCustomizeModal()}
               className="btn btn-outline footer-vip-btn"
               style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.4)' }}
+              title="Customize Sofas, Mattresses, or Cushions"
             >
               <Sliders size={16} />
-              <span>Customize Sofa</span>
+              <span>Customize &amp; Sizing</span>
             </button>
           </div>
         </div>
@@ -94,18 +95,18 @@ export default function Footer() {
             </div>
 
             <p className="footer-brand-desc">
-              <strong>myKouch</strong> by <strong>MB Marketing</strong> is Odisha's premier sofa manufacturer. We handcraft luxury L-shaped sectionals, 3+1+1 living room suites, and motorized recliners with seasoned hardwood chassis and cloud-soft foam.
+              <strong>myKouch</strong> by <strong>MB Marketing</strong> is Odisha's premier home comfort manufacturer. We craft bespoke luxury sofas, orthopedic mattresses, and designer pillows — delivering complete home comfort directly from our factory in Bhubaneswar.
             </p>
 
             {/* Quality Badges Row */}
             <div className="footer-trust-pills">
               <span className="footer-trust-pill">
                 <ShieldCheck size={13} />
-                <span>10-Yr Warranty</span>
+                <span>Up to 10-Yr Warranty</span>
               </span>
               <span className="footer-trust-pill">
                 <Award size={13} />
-                <span>Seasoned Sal Wood</span>
+                <span>Premium Materials</span>
               </span>
               <span className="footer-trust-pill">
                 <CheckCircle size={13} />
@@ -184,6 +185,17 @@ export default function Footer() {
           <div className="footer-col-links">
             <h4 className="footer-heading">Services &amp; Brand</h4>
             <ul className="footer-links-list">
+              <li className="footer-link-item">
+                <Link to="/become-a-dealer" style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>
+                  Become a Dealer (B2B)
+                </Link>
+              </li>
+              <li className="footer-link-item">
+                <Link to="/collections?category=mattress-beddings">Mattresses &amp; Beddings</Link>
+              </li>
+              <li className="footer-link-item">
+                <Link to="/collections?category=pillow-cushion">Pillows &amp; Cushions</Link>
+              </li>
               <li className="footer-link-item">
                 <Link to="/collections?filter=new-arrivals">New Arrivals 2026</Link>
               </li>

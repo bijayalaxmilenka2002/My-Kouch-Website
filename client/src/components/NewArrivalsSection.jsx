@@ -3,57 +3,55 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, Sparkles, ArrowRight } from 'lucide-react';
 import { useSofa } from '../context/SofaContext';
 import { getImageUrl } from '../services/api';
+import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
 export default function NewArrivalsSection({ products = [], loading = false }) {
   const { openCustomizeModal } = useSofa();
-  const [activeSubTab, setActiveSubTab] = useState('All Sofas');
+  const [activeSubTab, setActiveSubTab] = useState('All Products');
   const scrollRef = useRef(null);
 
-  // Filter ONLY products marked as isNewArrival by owner
+  // Filter products marked as isNewArrival
   const newArrivals = useMemo(() => {
-    if (!products || products.length === 0) return [];
-    return products.filter((p) => p.isNewArrival === true && p.isActive !== false);
+    const list = products && products.length > 0 ? products : FALLBACK_PRODUCTS;
+    return list.filter((p) => p.isNewArrival === true && p.isActive !== false);
   }, [products]);
 
-  // Subcategory tabs for myKouch sofa catalog
+  // Comprehensive home comfort category tabs
   const subCategoryTabs = [
-    'All Sofas',
-    'Chesterfields',
-    '3-Seater Sofas',
-    'L-Shaped Sets',
-    'Recliners',
-    'Sofa Combos',
-    '2-Seater Sofas',
-    'Custom Velvet',
+    'All Products',
+    'Luxury Sofas',
+    'Mattresses & Beddings',
+    'Pillows & Cushions',
+    'Living Room Sets',
   ];
 
   // Filter arrivals by active subcategory tab
   const filteredArrivals = useMemo(() => {
-    if (activeSubTab === 'All Sofas') return newArrivals;
-    if (activeSubTab === 'Chesterfields') {
+    if (activeSubTab === 'All Products') return newArrivals;
+    if (activeSubTab === 'Luxury Sofas') {
       return newArrivals.filter((p) =>
-        `${p.name} ${p.description || ''}`.toLowerCase().includes('chesterfield')
+        (p.category || '').toLowerCase().includes('sofa') ||
+        (p.category || '').toLowerCase().includes('recliner')
       );
     }
-    if (activeSubTab === '3-Seater Sofas') {
-      return newArrivals.filter((p) => p.category === '3 Seater Sofas');
-    }
-    if (activeSubTab === 'L-Shaped Sets') {
-      return newArrivals.filter((p) => p.category === 'L-Shaped Sofas');
-    }
-    if (activeSubTab === 'Recliners') {
-      return newArrivals.filter((p) => p.category === 'Recliner Sofas');
-    }
-    if (activeSubTab === 'Sofa Combos') {
-      return newArrivals.filter((p) => p.category === 'Sofa Combos');
-    }
-    if (activeSubTab === '2-Seater Sofas') {
-      return newArrivals.filter((p) => p.category === '2 Seater Sofas');
-    }
-    if (activeSubTab === 'Custom Velvet') {
+    if (activeSubTab === 'Mattresses & Beddings') {
       return newArrivals.filter((p) =>
-        (p.materials || []).some((m) => m.toLowerCase().includes('velvet')) ||
-        (p.description || '').toLowerCase().includes('velvet')
+        (p.category || '').toLowerCase().includes('mattress') ||
+        (p.category || '').toLowerCase().includes('bedding')
+      );
+    }
+    if (activeSubTab === 'Pillows & Cushions') {
+      return newArrivals.filter((p) =>
+        (p.category || '').toLowerCase().includes('pillow') ||
+        (p.category || '').toLowerCase().includes('cushion')
+      );
+    }
+    if (activeSubTab === 'Living Room Sets') {
+      return newArrivals.filter((p) =>
+        p.category === 'Sofa Combos' ||
+        p.category === 'L-Shaped Sofas' ||
+        (p.name || '').toLowerCase().includes('suite') ||
+        (p.name || '').toLowerCase().includes('set')
       );
     }
     return newArrivals;
@@ -138,7 +136,7 @@ export default function NewArrivalsSection({ products = [], loading = false }) {
                 onClick={() => openCustomizeModal()}
                 className="btn btn-primary btn-sm"
               >
-                <span>Request Custom Sofa</span>
+                <span>Request Custom Sizing &amp; Design</span>
                 <ArrowRight size={15} />
               </button>
               <Link to="/collections" className="btn btn-outline btn-sm">
@@ -156,15 +154,15 @@ export default function NewArrivalsSection({ products = [], loading = false }) {
               Oops! Sorry, No Products Found in &ldquo;{activeSubTab}&rdquo;
             </h3>
             <p className="wakefit-empty-text">
-              We couldn&apos;t find any new arrivals in this section right now. Our workshop is handcrafting fresh models every week — browse &ldquo;All Sofas&rdquo; to see our latest drops or request a custom build tailored to your space!
+              We couldn&apos;t find any new arrivals in this section right now. Our workshop is handcrafting fresh models every week — browse &ldquo;All Products&rdquo; to see our latest drops or request a custom build tailored to your space!
             </p>
             <div className="wakefit-empty-actions">
               <button
                 type="button"
-                onClick={() => setActiveSubTab('All Sofas')}
+                onClick={() => setActiveSubTab('All Products')}
                 className="btn btn-primary btn-sm"
               >
-                <span>View All Sofas</span>
+                <span>View All Products</span>
                 <ArrowRight size={15} />
               </button>
               <button
@@ -238,7 +236,7 @@ export default function NewArrivalsSection({ products = [], loading = false }) {
 
                     <div className="wakefit-card-info">
                       <span className="wakefit-card-category">
-                        {prod.category} • {prod.seatingCapacity || '3 Seater'}
+                        {prod.category} {prod.seatingCapacity ? `• ${prod.seatingCapacity}` : ''}
                       </span>
                       <h4 className="wakefit-card-title">{prod.name}</h4>
 

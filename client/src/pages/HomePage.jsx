@@ -29,6 +29,18 @@ export default function HomePage() {
 
         if (prodRes?.products && prodRes.products.length > 0) {
           setProducts(prodRes.products);
+        } else {
+          try {
+            const localCustomRaw = localStorage.getItem('mykouch_custom_products');
+            if (localCustomRaw) {
+              const localCustom = JSON.parse(localCustomRaw);
+              if (Array.isArray(localCustom) && localCustom.length > 0) {
+                setProducts(localCustom.filter((p) => p.isActive !== false));
+              }
+            }
+          } catch (e) {
+            // ignore
+          }
         }
         if (offerRes?.offer) {
           setActiveOffer(offerRes.offer);

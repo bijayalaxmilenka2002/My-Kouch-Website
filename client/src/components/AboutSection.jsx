@@ -20,7 +20,7 @@ export default function AboutSection() {
             <div className="about-badge-card">
               <div className="stat-num">100%</div>
               <div className="stat-text">
-                Direct In-House Sofa Manufacturing at our Sunderipada Factory
+                100% Direct In-House Furniture &amp; Bedding Manufacturing at our Sunderipada Factory
               </div>
             </div>
           </div>
@@ -35,11 +35,11 @@ export default function AboutSection() {
             <h2>Crafting Comfort. Designing Lifestyle.</h2>
 
             <p>
-              Under MB Marketing, <strong>myKouch</strong> was founded on a simple conviction: the living room is where life unfolds. You shouldn't have to compromise with mass-market sizes or flimsy particle boards when seeking true comfort.
+              Under MB Marketing, <strong>myKouch</strong> was founded on a simple conviction: your home is where life unfolds. You shouldn't have to compromise with mass-market sizes or flimsy particle boards when seeking true comfort.
             </p>
 
             <p>
-              Every sofa we build is framed with seasoned solid Sal and Marandi hardwood, reinforced with German-engineered springs, and layered with 40-density high-resilience memory foam.
+              From sofas framed with seasoned Sal hardwood to ergonomic pocket-spring mattresses, every piece is layered with premium materials.
             </p>
 
             {/* 3 Pillars from Client Company Profile */}
@@ -49,7 +49,7 @@ export default function AboutSection() {
                   <ShieldCheck size={22} />
                 </div>
                 <div className="pillar-title">Premium Quality</div>
-                <div className="pillar-desc">Anti-borer treated Sal wood with 10-year warranty</div>
+                <div className="pillar-desc">Premium materials with extensive warranties</div>
               </div>
 
               <div className="pillar-item">

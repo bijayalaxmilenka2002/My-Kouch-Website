@@ -50,11 +50,24 @@
     <link rel="icon" type="image/png" href="/assets/logo/logo.png" />
     <link rel="apple-touch-icon" href="/assets/logo/logo.png" />
 
-    <!-- Google Fonts: Outfit (modern geometric) and Playfair Display (classic editorial serif) -->
+    <!-- Immediate Redirect to Home Page on Browser Refresh -->
+    <script>
+      (function() {
+        try {
+          var navEntries = window.performance && window.performance.getEntriesByType ? window.performance.getEntriesByType('navigation') : [];
+          var isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || (window.performance && window.performance.navigation && window.performance.navigation.type === 1);
+          if (isReload && (window.location.pathname !== '/' || window.location.search !== '' || window.location.hash !== '')) {
+            window.location.replace('/');
+          }
+        } catch(e) {}
+      })();
+    </script>
+
+    <!-- Google Fonts: Outfit (modern geometric), Cormorant Garamond & Playfair Display (editorial designer serifs) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap"
       rel="stylesheet"
     />
 

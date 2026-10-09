@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { SofaProvider } from './context/SofaContext';
 
@@ -17,12 +17,29 @@ import CollectionsPage from './pages/CollectionsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import BecomeDealerPage from './pages/BecomeDealerPage';
 import OwnerLoginPage from './pages/OwnerLoginPage';
 import OwnerDashboardPage from './pages/OwnerDashboardPage';
 
 function AppLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isOwnerRoute = location.pathname.startsWith('/owner');
+
+  // When someone refreshes the page, redirect to home page
+  React.useEffect(() => {
+    try {
+      const navEntries = window.performance?.getEntriesByType?.('navigation') || [];
+      const isReload = navEntries.length > 0 && navEntries[0].type === 'reload';
+      const isLegacyReload = window.performance?.navigation?.type === 1;
+
+      if ((isReload || isLegacyReload) && !location.pathname.startsWith('/owner') && (location.pathname !== '/' || location.search !== '' || location.hash !== '')) {
+        navigate('/', { replace: true });
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
 
   // Classy scroll-triggered reveal observer
   React.useEffect(() => {
@@ -79,8 +96,12 @@ function AppLayout() {
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/become-a-dealer" element={<BecomeDealerPage />} />
+          <Route path="/dealer" element={<BecomeDealerPage />} />
+          <Route path="/dealers" element={<BecomeDealerPage />} />
 
           {/* Owner Portal Routes */}
+          <Route path="/owner" element={<Navigate to="/owner/dashboard" replace />} />
           <Route path="/owner/login" element={<OwnerLoginPage />} />
           <Route
             path="/owner/dashboard"

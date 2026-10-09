@@ -76,3 +76,59 @@ export const getOwnerProfile = async (req, res) => {
     });
   }
 };
+
+// @desc    Update owner profile / credentials
+// @route   PUT /api/auth/profile
+// @access  Private (Owner)
+export const updateOwnerCredentials = async (req, res) => {
+  try {
+    const { name, email, currentPassword, newPassword } = req.body;
+    const admin = await Admin.findById(req.owner.id);
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: 'Owner account not found',
+      });
+    }
+
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please provide current password to update your password',
+        });
+      }
+      const isMatch = await admin.matchPassword(currentPassword);
+      if (!isMatch) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current password is incorrect',
+        });
+      }
+      admin.passwordHash = await Admin.hashPassword(newPassword);
+    }
+
+    if (name) admin.name = name;
+    if (email) admin.email = email.toLowerCase().trim();
+
+    await admin.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Owner credentials updated successfully',
+      owner: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error updating owner credentials: ' + error.message,
+    });
+  }
+};
+

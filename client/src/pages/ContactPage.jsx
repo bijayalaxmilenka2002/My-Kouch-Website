@@ -69,7 +69,7 @@ export default function ContactPage() {
           </span>
           <h1 className="section-title">Visit Our Showroom or Factory</h1>
           <p className="section-subtitle">
-            Experience the foam density, touch 100+ fabric samples in person, or get a custom sofa designed for your living room.
+            Experience 40D foam and pocket coils, touch 100+ fabric samples in person, or get custom furniture, mattresses &amp; cushions designed for your home.
           </p>
         </div>
 
@@ -80,7 +80,7 @@ export default function ContactPage() {
               Send an Enquiry
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', marginBottom: '1.75rem' }}>
-              Our shopkeeper or sofa specialist will connect with you on WhatsApp or Call within hours.
+              Our workshop specialists will connect with you on WhatsApp or Call within hours.
             </p>
 
             {submitted ? (
@@ -162,8 +162,8 @@ export default function ContactPage() {
                       style={{ width: '100%' }}
                     >
                       <option value="General Contact">General Showroom Query</option>
-                      <option value="Customization">Custom Sofa Dimensions</option>
-                      <option value="Product Enquiry">Specific Sofa Model</option>
+                      <option value="Customization">Custom Sizing (Sofa / Mattress / Cushion)</option>
+                      <option value="Product Enquiry">Specific Product Model</option>
                       <option value="Dealership">Dealership / Commercial Query</option>
                     </select>
                   </div>

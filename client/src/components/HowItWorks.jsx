@@ -12,37 +12,37 @@ const steps = [
   {
     number: '01',
     title: 'Explore Collections',
-    description: 'Browse our curated L-shapes, 3+1+1 living room suites, and motorized recliners crafted at our factory.',
+    description: 'Browse our curated sofas, luxury mattresses, and premium pillows crafted at our factory.',
     icon: Compass,
   },
   {
     number: '02',
     title: 'Select Model & Comfort',
-    description: 'Pick the silhouette that matches your living room aesthetic and seating requirement.',
+    description: 'Pick the silhouette that matches your home aesthetic, seating, and sleep requirements.',
     icon: CheckSquare,
   },
   {
     number: '03',
     title: 'Customize Your Specs',
-    description: 'Tell us your exact room dimensions, select from 100+ velvet, bouclé or leatherette fabrics, and pick foam density.',
+    description: 'Tell us your exact dimensions, select from 100+ fabrics, and pick your ideal foam density or mattress firmness.',
     icon: Sliders,
   },
   {
     number: '04',
     title: 'Connect With Artisan',
-    description: 'Send an enquiry to connect directly with the shopkeeper and sofa master craftsman via Call or WhatsApp.',
+    description: 'Send an enquiry to connect directly with the shopkeeper and comfort experts and master craftsmen via Call or WhatsApp.',
     icon: PhoneCall,
   },
   {
     number: '05',
     title: 'Finalize Pricing & Polish',
-    description: 'Review transparent factory-direct pricing, custom woodwork details, and get your personalized timeline.',
+    description: 'Review transparent factory-direct pricing, custom material details, and get your personalized timeline.',
     icon: Sparkles,
   },
   {
     number: '06',
-    title: 'Get Your Dream Sofa',
-    description: 'Your sofa is precision-built, quality-inspected, and delivered with white-glove installation right to your living room.',
+    title: 'Get Your Dream Setup',
+    description: 'Your order is precision-built, quality-inspected, and delivered with white-glove installation right to your home.',
     icon: Truck,
   },
 ];
@@ -56,9 +56,9 @@ export default function HowItWorks() {
             <Sparkles size={14} />
             <span>The myKouch Journey</span>
           </span>
-          <h2 className="section-title">How To Get Your Dream Sofa</h2>
+          <h2 className="section-title">How To Build Your Dream Setup</h2>
           <p className="section-subtitle">
-            From initial discovery to bespoke factory craftsmanship and living room delivery, here is how easy it is to work with us.
+            From initial discovery to bespoke factory craftsmanship and home delivery, here is how easy it is to work with us.
           </p>
         </div>
 

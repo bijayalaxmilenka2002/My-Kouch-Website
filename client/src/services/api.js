@@ -159,6 +159,14 @@ export const getOwnerMe = async (token) => {
   return request('/auth/me', { token });
 };
 
+export const updateOwnerProfile = async (updateData, token) => {
+  return request('/auth/profile', {
+    method: 'PUT',
+    body: JSON.stringify(updateData),
+    token,
+  });
+};
+
 // ================= DASHBOARD STATS =================
 export const getDashboardStats = async (token) => {
   return request('/stats', { token });

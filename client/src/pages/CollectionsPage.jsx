@@ -1,173 +1,286 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useParams, Link } from 'react-router-dom';
-import { Filter, SlidersHorizontal, Search, X, Sparkles, Phone, MessageSquare, ArrowRight, ShieldCheck, Award } from 'lucide-react';
+import { useSearchParams, useParams, Link, useNavigate } from 'react-router-dom';
+import { SlidersHorizontal, Search, X, Sparkles, Phone, MessageSquare, ArrowRight, ShieldCheck, Armchair } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { getProducts } from '../services/api';
 import SEO from '../components/SEO';
 import { useSofa } from '../context/SofaContext';
 import {
-  CATEGORIES,
-  CATEGORY_NAMES,
+  SOFA_CATEGORIES,
+  MATTRESS_TYPES,
+  PILLOW_TYPES,
   SLUG_TO_CATEGORY_MAP,
-  getCategoryBySlugOrName,
 } from '../constants/categories';
 import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
-const filterCategories = ['All', ...CATEGORY_NAMES];
-
-const seatingCapacities = [
-  'All',
-  '2 Seater',
-  '3 Seater',
-  '5 Seater (3 + 1 + 1)',
-  '5 - 6 Seater',
-  '6 - 7 Seater',
-  'Single Recliner',
+const sofaSidebarItems = [
+  { name: 'All Sofas', slug: 'all' },
+  ...SOFA_CATEGORIES,
 ];
 
 export default function CollectionsPage() {
   const { slug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { openCustomizeModal, openEnquiryModal } = useSofa();
 
   const [products, setProducts] = useState(FALLBACK_PRODUCTS);
   const [loading, setLoading] = useState(false);
 
-  // Determine active category from route params (:slug) or search query (?category=)
+  // Active query parameters
   const rawCategoryParam = slug || searchParams.get('category') || 'All';
-  const resolvedCategory = rawCategoryParam !== 'All'
-    ? (SLUG_TO_CATEGORY_MAP[rawCategoryParam.toLowerCase()] || rawCategoryParam)
-    : 'All';
-
+  const activeTypeParam = searchParams.get('type') || 'all';
   const activeFilter = searchParams.get('filter') || '';
 
+  // Determine active pillar: Sofas, Mattress & Beddings, or Pillows & Cushions
+  const isBeddingPillar =
+    rawCategoryParam.toLowerCase().includes('mattress') ||
+    rawCategoryParam.toLowerCase().includes('bedding');
+
+  const isPillowPillar =
+    rawCategoryParam.toLowerCase().includes('pillow') ||
+    rawCategoryParam.toLowerCase().includes('cushion');
+
+  const isSofaPillar = !isBeddingPillar && !isPillowPillar;
+
+  // Resolve active sofa category
+  const resolvedSofaCategory =
+    rawCategoryParam !== 'All' && rawCategoryParam !== 'all'
+      ? (SLUG_TO_CATEGORY_MAP[rawCategoryParam.toLowerCase()] || rawCategoryParam)
+      : 'All Sofas';
+
   // Filter States
-  const [selectedCategory, setSelectedCategory] = useState(resolvedCategory);
-  const [selectedSeating, setSelectedSeating] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState(resolvedSofaCategory);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  // Sync state when URL params or slug changes
+  // Synchronize category state when route changes
   useEffect(() => {
-    setSelectedCategory(resolvedCategory);
-    if (activeFilter === 'new-arrivals') {
-      setSortBy('newest');
+    if (isSofaPillar) {
+      setSelectedCategory(resolvedSofaCategory);
     }
-  }, [resolvedCategory, activeFilter]);
+  }, [rawCategoryParam, isSofaPillar, resolvedSofaCategory]);
 
+  // Fetch & filter products strictly isolated by active pillar
   useEffect(() => {
     const fetchCollectionData = async () => {
       try {
         setLoading(true);
-        const params = {
-          isActive: 'true',
-        };
+        let baseList = FALLBACK_PRODUCTS;
 
-        if (activeFilter === 'new-arrivals') {
-          params.isNewArrival = 'true';
-        } else if (activeFilter === 'top-selling') {
-          params.isTopSelling = 'true';
+        try {
+          const apiParams = { isActive: 'true' };
+          if (activeFilter === 'new-arrivals') apiParams.isNewArrival = 'true';
+          if (activeFilter === 'top-selling') apiParams.isTopSelling = 'true';
+          const res = await getProducts(apiParams);
+          if (res?.products && res.products.length > 0) {
+            baseList = res.products;
+          }
+        } catch (e) {
+          baseList = FALLBACK_PRODUCTS;
         }
 
-        if (selectedCategory && selectedCategory !== 'All') {
-          params.category = selectedCategory;
+        // Merge any products added/edited in owner portal
+        try {
+          const localCustomRaw = localStorage.getItem('mykouch_custom_products');
+          if (localCustomRaw) {
+            const localCustom = JSON.parse(localCustomRaw);
+            if (Array.isArray(localCustom) && localCustom.length > 0) {
+              baseList = localCustom.filter((p) => p.isActive !== false);
+            }
+          }
+        } catch (e) {
+          // ignore
         }
 
-        if (selectedSeating && selectedSeating !== 'All') {
-          params.seatingCapacity = selectedSeating;
-        }
+        let filtered = [];
 
-        if (searchTerm.trim()) {
-          params.search = searchTerm.trim();
-        }
-
-        if (sortBy === 'price_asc') params.sort = 'price_asc';
-        if (sortBy === 'price_desc') params.sort = 'price_desc';
-        if (sortBy === 'rating') params.sort = 'rating';
-
-        const res = await getProducts(params);
-        if (res?.products) {
-          setProducts(res.products);
-        } else if (selectedCategory && selectedCategory !== 'All') {
-          // If live fetch returned nothing or error, filter fallback products
-          const filteredFallback = FALLBACK_PRODUCTS.filter(
-            (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
+        if (isSofaPillar) {
+          // Strictly only sofas: eliminate any mattress or pillow items
+          filtered = baseList.filter(
+            (p) =>
+              p.category !== 'Mattress & Beddings' &&
+              p.category !== 'Pillow & Cushion'
           );
-          setProducts(filteredFallback);
+
+          if (
+            selectedCategory &&
+            selectedCategory !== 'All' &&
+            selectedCategory !== 'All Sofas'
+          ) {
+            filtered = filtered.filter(
+              (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
+            );
+          }
+        } else if (isBeddingPillar) {
+          // Strictly only mattresses & beddings
+          filtered = baseList.filter((p) => p.category === 'Mattress & Beddings');
+
+          if (activeTypeParam && activeTypeParam !== 'all') {
+            const raw = activeTypeParam.toLowerCase();
+            const term = raw.replace(/-/g, ' ');
+            const singular = term.endsWith('s') ? term.slice(0, -1) : term;
+            filtered = filtered.filter(
+              (p) =>
+                p.subType === activeTypeParam ||
+                p.subType === raw ||
+                p.subType === singular ||
+                (p.subType && p.subType.toLowerCase().includes(singular)) ||
+                (p.name && p.name.toLowerCase().includes(singular)) ||
+                (p.description && p.description.toLowerCase().includes(singular))
+            );
+          }
+        } else if (isPillowPillar) {
+          // Strictly only pillows & cushions
+          filtered = baseList.filter((p) => p.category === 'Pillow & Cushion');
+
+          if (activeTypeParam && activeTypeParam !== 'all') {
+            const raw = activeTypeParam.toLowerCase();
+            const term = raw.replace(/-/g, ' ');
+            const singular = term.endsWith('s') ? term.slice(0, -1) : term;
+            filtered = filtered.filter(
+              (p) =>
+                p.subType === activeTypeParam ||
+                p.subType === raw ||
+                p.subType === singular ||
+                (p.subType && p.subType.toLowerCase().includes(singular)) ||
+                (p.name && p.name.toLowerCase().includes(singular)) ||
+                (p.description && p.description.toLowerCase().includes(singular))
+            );
+          }
         }
+
+        // Live search filter
+        if (searchTerm.trim()) {
+          const q = searchTerm.toLowerCase();
+          filtered = filtered.filter(
+            (p) =>
+              p.name.toLowerCase().includes(q) ||
+              (p.description && p.description.toLowerCase().includes(q)) ||
+              (p.category && p.category.toLowerCase().includes(q))
+          );
+        }
+
+        // Collection tag filter
+        if (activeFilter === 'new-arrivals') {
+          const newArr = filtered.filter((p) => p.isNewArrival);
+          if (newArr.length > 0) filtered = newArr;
+        } else if (activeFilter === 'top-selling') {
+          const topSell = filtered.filter((p) => p.isTopSelling);
+          if (topSell.length > 0) filtered = topSell;
+        }
+
+        // Sorting
+        if (sortBy === 'price_asc') {
+          filtered.sort((a, b) => a.price - b.price);
+        } else if (sortBy === 'price_desc') {
+          filtered.sort((a, b) => b.price - a.price);
+        } else if (sortBy === 'rating') {
+          filtered.sort((a, b) => (b.rating || 5) - (a.rating || 5));
+        }
+
+        setProducts(filtered);
       } catch (err) {
         console.error('Error fetching collection products:', err);
-        // Fallback filter
-        if (selectedCategory && selectedCategory !== 'All') {
-          const filteredFallback = FALLBACK_PRODUCTS.filter(
-            (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
-          );
-          setProducts(filteredFallback);
-        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchCollectionData();
-  }, [selectedCategory, selectedSeating, searchTerm, sortBy, activeFilter]);
+  }, [
+    isSofaPillar,
+    isBeddingPillar,
+    isPillowPillar,
+    selectedCategory,
+    activeTypeParam,
+    searchTerm,
+    sortBy,
+    activeFilter,
+  ]);
 
-  const handleCategorySelect = (cat) => {
-    setSelectedCategory(cat);
+  // Sidebar Selection Handlers
+  const handleSofaSelect = (item) => {
+    setSelectedCategory(item.name);
     const newParams = {};
-    if (cat !== 'All') {
-      const catObj = CATEGORIES.find((c) => c.name === cat);
-      newParams.category = catObj ? catObj.slug : cat;
+    if (item.slug !== 'all' && item.name !== 'All Sofas') {
+      newParams.category = item.slug;
     }
     if (activeFilter) newParams.filter = activeFilter;
     setSearchParams(newParams);
   };
 
-  const removeFilterParam = (key) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.delete(key);
+  const handleBeddingSelect = (item) => {
+    const newParams = { category: 'mattress-beddings' };
+    if (item.typeKey && item.typeKey !== 'all') {
+      newParams.type = item.typeKey;
+    }
+    if (activeFilter) newParams.filter = activeFilter;
+    setSearchParams(newParams);
+  };
+
+  const handlePillowSelect = (item) => {
+    const newParams = { category: 'pillow-cushion' };
+    if (item.typeKey && item.typeKey !== 'all') {
+      newParams.type = item.typeKey;
+    }
+    if (activeFilter) newParams.filter = activeFilter;
     setSearchParams(newParams);
   };
 
   const clearAllFilters = () => {
-    setSelectedCategory('All');
-    setSelectedSeating('All');
     setSearchTerm('');
     setSortBy('newest');
-    setSearchParams({});
+    if (isSofaPillar) {
+      setSelectedCategory('All Sofas');
+      setSearchParams({});
+    } else if (isBeddingPillar) {
+      setSearchParams({ category: 'mattress-beddings' });
+    } else if (isPillowPillar) {
+      setSearchParams({ category: 'pillow-cushion' });
+    }
   };
 
-  const activeCategoryObj = getCategoryBySlugOrName(selectedCategory);
+  // Dynamic Page Headers & Metadata
+  let pageTitle = 'Luxury Sofas & Living Room Sets';
+  let pageSubtitle = 'Every sofa in our collection is handcrafted with termite-treated solid Sal wood, high-density foam, and bespoke fabric tailoring in Bhubaneswar.';
+  let pageTag = 'Handcrafted Sofa Workshop';
 
-  // Dynamic Page Header Content Based on Selected Category and Filter
-  let pageTitle = selectedCategory === 'All' ? 'Complete Furniture & Living Collection' : selectedCategory;
-  let pageSubtitle = 'Every sofa and furniture piece in our collection is handcrafted with termite-treated solid Sal wood, high-density foam, and bespoke fabric tailoring in Bhubaneswar.';
-  let pageTag = 'Factory-Direct Showcase';
-
-  if (activeCategoryObj) {
-    if (activeCategoryObj.slug === 'mattress-beddings') {
-      pageTitle = 'Luxury Mattresses & Beddings';
-      pageSubtitle = 'Custom orthopedic high-resilience memory foam mattresses, pocketed spring sleep systems, and hotel-grade beddings engineered for deep restorative sleep.';
-      pageTag = 'Restful Luxury';
-    } else if (activeCategoryObj.slug === 'pillow-cushion') {
-      pageTitle = 'Designer Pillows & Cushions';
-      pageSubtitle = 'Handcrafted decorative sofa throw cushions, memory-foam neck pillows, and bouclé accent pads tailored for bespoke living comfort.';
-      pageTag = 'Plush Accents';
+  if (isSofaPillar) {
+    if (selectedCategory && selectedCategory !== 'All' && selectedCategory !== 'All Sofas') {
+      pageTitle = selectedCategory;
+      const catObj = SOFA_CATEGORIES.find((c) => c.name === selectedCategory);
+      if (catObj?.description) pageSubtitle = catObj.description;
+      pageTag = catObj?.badge || 'Sofa Collection';
     }
+  } else if (isBeddingPillar) {
+    const activeObj = MATTRESS_TYPES.find((t) => t.typeKey === activeTypeParam);
+    pageTitle = activeObj && activeObj.typeKey !== 'all' ? activeObj.name : 'Luxury Mattresses & Beddings';
+    pageSubtitle = activeObj?.description || 'Custom orthopedic memory foam mattresses, pocketed spring sleep systems, and hotel-grade beddings engineered for deep restorative sleep.';
+    pageTag = activeObj?.badge || 'Restful Luxury';
+  } else if (isPillowPillar) {
+    const activeObj = PILLOW_TYPES.find((t) => t.typeKey === activeTypeParam);
+    pageTitle = activeObj && activeObj.typeKey !== 'all' ? activeObj.name : 'Designer Pillows & Cushions';
+    pageSubtitle = activeObj?.description || 'Handcrafted decorative sofa throw cushions, memory-foam neck pillows, and bouclé accent pads tailored for bespoke living comfort.';
+    pageTag = activeObj?.badge || 'Plush Accents';
   }
 
   if (activeFilter === 'new-arrivals') {
-    pageTitle = selectedCategory === 'All' ? 'New Arrivals Collection' : `New Arrivals • ${selectedCategory}`;
-    pageSubtitle = 'Discover our newest silhouettes fresh off our Bhubaneswar workshop floor. Modern aesthetics, ergonomic frames, and bespoke upholstery tailoring.';
+    pageTitle = `${pageTitle} • New Arrivals`;
     pageTag = 'Fresh Off The Workshop Floor';
   } else if (activeFilter === 'top-selling') {
-    pageTitle = selectedCategory === 'All' ? 'Top Selling Collection' : `Top Selling • ${selectedCategory}`;
-    pageSubtitle = 'Our highest-rated, customer-favorite living room centerpieces handcrafted for long-lasting comfort.';
+    pageTitle = `${pageTitle} • Top Selling`;
     pageTag = 'Customer Favorites';
   }
 
-  const isSofaCategory = selectedCategory === 'All' || selectedCategory.toLowerCase().includes('sofa');
+  // Active filter chip determination
+  const hasActiveFilterChip =
+    activeFilter ||
+    (isSofaPillar && selectedCategory !== 'All' && selectedCategory !== 'All Sofas') ||
+    (isBeddingPillar && activeTypeParam !== 'all') ||
+    (isPillowPillar && activeTypeParam !== 'all') ||
+    searchTerm.trim() !== '';
 
   return (
     <div style={{ background: '#FAF8F5', minHeight: '80vh', padding: '2.5rem 0 5rem' }}>
@@ -180,13 +293,38 @@ export default function CollectionsPage() {
         <nav aria-label="Breadcrumb" style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
           <Link to="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Home</Link>
           <span>/</span>
-          <Link to="/collections" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Collections</Link>
-          {selectedCategory !== 'All' && (
+          {isSofaPillar ? (
             <>
-              <span>/</span>
-              <span style={{ color: 'var(--color-espresso)', fontWeight: 600 }}>{selectedCategory}</span>
+              <Link to="/collections" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Sofas</Link>
+              {selectedCategory !== 'All' && selectedCategory !== 'All Sofas' && (
+                <>
+                  <span>/</span>
+                  <span style={{ color: 'var(--color-espresso)', fontWeight: 600 }}>{selectedCategory}</span>
+                </>
+              )}
+            </>
+          ) : isBeddingPillar ? (
+            <>
+              <Link to="/collections?category=mattress-beddings" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Mattress &amp; Beddings</Link>
+              {activeTypeParam !== 'all' && (
+                <>
+                  <span>/</span>
+                  <span style={{ color: 'var(--color-espresso)', fontWeight: 600 }}>{pageTitle}</span>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <Link to="/collections?category=pillow-cushion" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Pillows &amp; Cushions</Link>
+              {activeTypeParam !== 'all' && (
+                <>
+                  <span>/</span>
+                  <span style={{ color: 'var(--color-espresso)', fontWeight: 600 }}>{pageTitle}</span>
+                </>
+              )}
             </>
           )}
+
           {activeFilter && (
             <>
               <span>/</span>
@@ -222,25 +360,7 @@ export default function CollectionsPage() {
               aria-label="Toggle collection filters"
             >
               <SlidersHorizontal size={16} />
-              <span>{mobileFilterOpen ? 'Hide Filters' : 'Filter Collections'}</span>
-              {(selectedCategory !== 'All' || selectedSeating !== 'All') && (
-                <span
-                  style={{
-                    background: 'var(--color-primary)',
-                    color: '#FFFFFF',
-                    borderRadius: '50%',
-                    width: '18px',
-                    height: '18px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.7rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  {(selectedCategory !== 'All' ? 1 : 0) + (selectedSeating !== 'All' ? 1 : 0)}
-                </span>
-              )}
+              <span>{mobileFilterOpen ? 'Hide Categories' : 'Filter Categories'}</span>
             </button>
 
             {/* Search Box */}
@@ -248,13 +368,13 @@ export default function CollectionsPage() {
               <Search size={18} color="var(--text-muted)" />
               <input
                 type="text"
-                placeholder="Search by name, fabric, style..."
+                placeholder={isSofaPillar ? "Search sofas by model or fabric..." : isBeddingPillar ? "Search mattresses by type..." : "Search pillows & cushions..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ border: 'none', background: 'transparent', padding: 0, width: '100%', fontSize: '0.9rem' }}
               />
               {searchTerm && (
-                <button onClick={() => setSearchTerm('')} style={{ color: 'var(--text-muted)' }}>
+                <button onClick={() => setSearchTerm('')} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>
                   <X size={16} />
                 </button>
               )}
@@ -286,11 +406,12 @@ export default function CollectionsPage() {
           </div>
 
           {/* Active Filter Badges */}
-          {(activeFilter || selectedCategory !== 'All' || selectedSeating !== 'All') && (
+          {hasActiveFilterChip && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', paddingTop: '0.6rem', borderTop: '1px solid var(--border-light)', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Active Filters:</span>
-              
-              {selectedCategory !== 'All' && (
+
+              {/* Sofa Category Chip */}
+              {isSofaPillar && selectedCategory !== 'All' && selectedCategory !== 'All Sofas' && (
                 <span
                   style={{
                     display: 'inline-flex',
@@ -305,9 +426,9 @@ export default function CollectionsPage() {
                     fontWeight: 700,
                   }}
                 >
-                  <span>Category: {selectedCategory}</span>
+                  <span>Sofa: {selectedCategory}</span>
                   <button
-                    onClick={() => handleCategorySelect('All')}
+                    onClick={() => handleSofaSelect({ name: 'All Sofas', slug: 'all' })}
                     style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'inherit' }}
                     title="Clear category"
                   >
@@ -316,6 +437,61 @@ export default function CollectionsPage() {
                 </span>
               )}
 
+              {/* Mattress Subtype Chip */}
+              {isBeddingPillar && activeTypeParam !== 'all' && (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: 'var(--color-primary-light)',
+                    color: 'var(--color-primary)',
+                    border: '1px solid var(--color-primary-border)',
+                    padding: '0.25rem 0.75rem',
+                    borderRadius: 'var(--radius-full)',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  <span>Type: {pageTitle}</span>
+                  <button
+                    onClick={() => handleBeddingSelect({ typeKey: 'all' })}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'inherit' }}
+                    title="Clear type"
+                  >
+                    <X size={13} />
+                  </button>
+                </span>
+              )}
+
+              {/* Pillow Subtype Chip */}
+              {isPillowPillar && activeTypeParam !== 'all' && (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: 'var(--color-primary-light)',
+                    color: 'var(--color-primary)',
+                    border: '1px solid var(--color-primary-border)',
+                    padding: '0.25rem 0.75rem',
+                    borderRadius: 'var(--radius-full)',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  <span>Type: {pageTitle}</span>
+                  <button
+                    onClick={() => handlePillowSelect({ typeKey: 'all' })}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'inherit' }}
+                    title="Clear type"
+                  >
+                    <X size={13} />
+                  </button>
+                </span>
+              )}
+
+              {/* Collection Filter Tag */}
               {activeFilter && (
                 <span
                   style={{
@@ -333,16 +509,21 @@ export default function CollectionsPage() {
                 >
                   <span>{activeFilter === 'new-arrivals' ? '✨ New Arrivals' : '★ Top Selling'}</span>
                   <button
-                    onClick={() => removeFilterParam('filter')}
+                    onClick={() => {
+                      const newParams = new URLSearchParams(searchParams);
+                      newParams.delete('filter');
+                      setSearchParams(newParams);
+                    }}
                     style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'inherit' }}
-                    title="Clear collection filter"
+                    title="Clear filter"
                   >
                     <X size={13} />
                   </button>
                 </span>
               )}
 
-              {selectedSeating !== 'All' && (
+              {/* Search Query Chip */}
+              {searchTerm && (
                 <span
                   style={{
                     display: 'inline-flex',
@@ -357,11 +538,10 @@ export default function CollectionsPage() {
                     fontWeight: 700,
                   }}
                 >
-                  <span>Seating: {selectedSeating}</span>
+                  <span>Keyword: "{searchTerm}"</span>
                   <button
-                    onClick={() => setSelectedSeating('All')}
+                    onClick={() => setSearchTerm('')}
                     style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'inherit' }}
-                    title="Clear seating filter"
                   >
                     <X size={13} />
                   </button>
@@ -378,99 +558,97 @@ export default function CollectionsPage() {
           )}
         </div>
 
-        {/* Main Grid with Sidebar Filter */}
+        {/* Main Grid with Dedicated Pillar Sidebar */}
         <div className="catalog-main-layout">
           {/* Desktop & Collapsible Mobile Filter Sidebar */}
           <aside className={`catalog-sidebar ${mobileFilterOpen ? 'mobile-open' : ''}`}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-light)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: 'var(--color-espresso)' }}>
                 <SlidersHorizontal size={18} color="var(--color-primary)" />
-                <span>Product Categories</span>
+                <span>
+                  {isSofaPillar ? 'Sofa Categories' : isBeddingPillar ? 'Mattress Types' : 'Pillow Types'}
+                </span>
               </div>
               <button
                 onClick={clearAllFilters}
-                style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontWeight: 600 }}
+                style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 Reset
               </button>
             </div>
 
-            {/* Categories */}
-            <div style={{ marginBottom: '2rem' }}>
-              <h4 style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-espresso)', marginBottom: '0.85rem' }}>
-                All Categories
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                {filterCategories.map((cat) => {
-                  const isSelected = selectedCategory === cat;
-                  const catMeta = CATEGORIES.find((c) => c.name === cat);
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => handleCategorySelect(cat)}
-                      style={{
-                        textAlign: 'left',
-                        padding: '0.5rem 0.65rem',
-                        borderRadius: 'var(--radius-xs)',
-                        fontSize: '0.88rem',
-                        fontWeight: isSelected ? 700 : 500,
-                        background: isSelected ? 'var(--color-primary-light)' : 'transparent',
-                        color: isSelected ? 'var(--color-primary)' : 'var(--text-secondary)',
-                        transition: 'all 0.15s ease',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <span>{cat}</span>
-                      {catMeta?.badge && (
-                        <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.4rem', borderRadius: '4px', background: isSelected ? '#FFFFFF' : 'var(--bg-sand)', color: 'var(--color-primary)', fontWeight: 600 }}>
-                          {catMeta.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
+            {/* Category Navigation (STRICTLY SEGREGATED BY PILLAR) */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div className="catalog-category-list">
+                {isSofaPillar &&
+                  sofaSidebarItems.map((cat) => {
+                    const isSelected =
+                      cat.slug === 'all'
+                        ? selectedCategory === 'All' || selectedCategory === 'All Sofas'
+                        : selectedCategory === cat.name;
+
+                    return (
+                      <button
+                        key={cat.slug}
+                        onClick={() => handleSofaSelect(cat)}
+                        className={`catalog-category-btn ${isSelected ? 'active' : ''}`}
+                        aria-pressed={isSelected}
+                      >
+                        <span className="catalog-category-name">{cat.name}</span>
+                      </button>
+                    );
+                  })}
+
+                {isBeddingPillar &&
+                  MATTRESS_TYPES.map((type) => {
+                    const isSelected =
+                      (type.typeKey === 'all' && activeTypeParam === 'all') ||
+                      type.typeKey === activeTypeParam;
+
+                    return (
+                      <button
+                        key={type.typeKey}
+                        onClick={() => handleBeddingSelect(type)}
+                        className={`catalog-category-btn ${isSelected ? 'active' : ''}`}
+                        aria-pressed={isSelected}
+                      >
+                        <span className="catalog-category-name">{type.name}</span>
+                      </button>
+                    );
+                  })}
+
+                {isPillowPillar &&
+                  PILLOW_TYPES.map((type) => {
+                    const isSelected =
+                      (type.typeKey === 'all' && activeTypeParam === 'all') ||
+                      type.typeKey === activeTypeParam;
+
+                    return (
+                      <button
+                        key={type.typeKey}
+                        onClick={() => handlePillowSelect(type)}
+                        className={`catalog-category-btn ${isSelected ? 'active' : ''}`}
+                        aria-pressed={isSelected}
+                      >
+                        <span className="catalog-category-name">{type.name}</span>
+                      </button>
+                    );
+                  })}
               </div>
             </div>
 
-            {/* Seating Capacity (Shown for sofas) */}
-            {isSofaCategory && (
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-espresso)', marginBottom: '0.85rem' }}>
-                  Sofa Seating Capacity
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                  {seatingCapacities.map((seat) => (
-                    <button
-                      key={seat}
-                      onClick={() => setSelectedSeating(seat)}
-                      style={{
-                        textAlign: 'left',
-                        padding: '0.45rem 0.65rem',
-                        borderRadius: 'var(--radius-xs)',
-                        fontSize: '0.85rem',
-                        fontWeight: selectedSeating === seat ? 700 : 500,
-                        background: selectedSeating === seat ? 'var(--color-primary-light)' : 'transparent',
-                        color: selectedSeating === seat ? 'var(--color-primary)' : 'var(--text-secondary)',
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      {seat}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Quick Factory Info Badge */}
-            <div style={{ background: 'var(--bg-sand-light)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)', marginTop: '1.5rem' }}>
+            {/* Quick Factory Info Badge (NO SEATING CAPACITY CARD) */}
+            <div style={{ background: 'var(--bg-sand-light)', padding: '1.1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)', marginTop: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-espresso)', fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.35rem' }}>
                 <ShieldCheck size={16} color="var(--color-primary)" />
                 <span>Factory Direct Warranty</span>
               </div>
               <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.45, margin: 0 }}>
-                Every sofa, mattress, and cushion is custom manufactured in Bhubaneswar with warranty and 100+ fabric choices.
+                {isSofaPillar
+                  ? 'All sofas are handcrafted in Bhubaneswar with 10-year seasoned Sal wood frame warranty and 100+ bespoke fabric choices.'
+                  : isBeddingPillar
+                  ? 'Every mattress is built with zero-sag guarantee, orthopedic support cores, and custom cot sizing.'
+                  : 'All cushions and pillows are tailored with hypoallergenic fillings, heavy-duty zippers, and designer fabrics.'}
               </p>
             </div>
           </aside>
@@ -479,7 +657,7 @@ export default function CollectionsPage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
               <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                Showing <strong>{products.length}</strong> items in <em>{selectedCategory}</em>
+                Showing <strong>{products.length}</strong> items in <em>{pageTitle}</em>
               </span>
             </div>
 
@@ -488,112 +666,17 @@ export default function CollectionsPage() {
                 <p style={{ color: 'var(--text-muted)' }}>Loading collection catalogue...</p>
               </div>
             ) : products.length === 0 ? (
-              /* GRACEFUL LUXURY CATEGORY PREVIEW & EMPTY STATE */
-              activeCategoryObj && (activeCategoryObj.slug === 'mattress-beddings' || activeCategoryObj.slug === 'pillow-cushion') ? (
-                <div
-                  style={{
-                    background: '#FFFFFF',
-                    borderRadius: 'var(--radius-xl)',
-                    overflow: 'hidden',
-                    border: '1px solid var(--border-subtle)',
-                    boxShadow: 'var(--shadow-md)',
-                  }}
-                >
-                  <div style={{ position: 'relative', width: '100%', height: '320px', overflow: 'hidden' }}>
-                    <img
-                      src={activeCategoryObj.image}
-                      alt={activeCategoryObj.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                    <div
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'linear-gradient(to top, rgba(31, 21, 16, 0.85) 0%, rgba(31, 21, 16, 0.3) 60%, transparent 100%)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'flex-end',
-                        padding: '2rem',
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.4rem',
-                          background: 'rgba(200, 98, 40, 0.9)',
-                          color: '#FFFFFF',
-                          padding: '0.3rem 0.85rem',
-                          borderRadius: 'var(--radius-full)',
-                          fontSize: '0.78rem',
-                          fontWeight: 700,
-                          width: 'fit-content',
-                          marginBottom: '0.75rem',
-                          backdropFilter: 'blur(4px)',
-                        }}
-                      >
-                        <Sparkles size={13} />
-                        <span>Bespoke Collection • Launching Soon</span>
-                      </span>
-                      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', margin: 0, color: '#FFFFFF', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                        {activeCategoryObj.name}
-                      </h2>
-                      <p style={{ fontSize: '0.95rem', color: '#F3EDE2', margin: '0.5rem 0 0', maxWidth: '650px' }}>
-                        {activeCategoryObj.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div style={{ padding: '2.5rem', textAlign: 'center' }}>
-                    <div style={{ maxWidth: '640px', margin: '0 auto' }}>
-                      <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--color-espresso)', marginBottom: '0.75rem' }}>
-                        Custom Dimensions &amp; Fabric Orders Available Now
-                      </h3>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '2rem' }}>
-                        Our factory craftsmen are currently photographing and cataloguing our ready-stock {activeCategoryObj.name.toLowerCase()} lineup.
-                        In the meantime, custom sizes (King, Queen, Custom Thickness) and 100+ velvet &amp; bouclé cushion fabrics are manufactured to order with direct factory pricing.
-                      </p>
-
-                      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <button
-                          onClick={() => openEnquiryModal({ name: `Custom ${activeCategoryObj.name}`, category: activeCategoryObj.name })}
-                          className="btn btn-primary"
-                        >
-                          <MessageSquare size={16} />
-                          <span>Enquire For Custom {activeCategoryObj.shortName}</span>
-                        </button>
-                        <a
-                          href="tel:+918093376990"
-                          className="btn btn-secondary"
-                        >
-                          <Phone size={16} />
-                          <span>Call Workshop (+91 80933 76990)</span>
-                        </a>
-                        <button
-                          onClick={() => handleCategorySelect('All')}
-                          className="btn btn-outline"
-                        >
-                          <span>Explore Sofas</span>
-                          <ArrowRight size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div style={{ textAlign: 'center', padding: '5rem 2rem', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-                  <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: 'var(--color-espresso)' }}>
-                    No products matched your selected filters
-                  </h3>
-                  <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
-                    Try selecting a different category or clearing your search term to see more models.
-                  </p>
-                  <button onClick={clearAllFilters} className="btn btn-outline">
-                    Reset Filters
-                  </button>
-                </div>
-              )
+              <div style={{ textAlign: 'center', padding: '5rem 2rem', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: 'var(--color-espresso)' }}>
+                  No products matched your selected filters
+                </h3>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+                  Try selecting a different type or clearing your search term to view more models.
+                </p>
+                <button onClick={clearAllFilters} className="btn btn-outline">
+                  Reset Filters
+                </button>
+              </div>
             ) : (
               <div className="products-grid">
                 {products.map((product) => (

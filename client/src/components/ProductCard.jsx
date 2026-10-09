@@ -58,12 +58,6 @@ export default function ProductCard({ product }) {
             {product.discount}% OFF
           </span>
         )}
-
-        {product.seatingCapacity && (
-          <span className="product-capacity-tag">
-            {product.seatingCapacity}
-          </span>
-        )}
       </div>
 
       <div className="product-card-body">

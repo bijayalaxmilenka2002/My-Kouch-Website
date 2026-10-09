@@ -33,6 +33,11 @@ const productSchema = new mongoose.Schema(
       ],
       trim: true,
     },
+    subType: {
+      type: String,
+      default: '',
+      trim: true,
+    },
     images: {
       type: [String],
       required: true,

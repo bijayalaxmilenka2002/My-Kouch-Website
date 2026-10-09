@@ -637,3 +637,87 @@ input:checked + .toggle-slider:before {
     font-size: 1.4rem;
   }
 }
+
+/* Pillar Filter Pills */
+.pillar-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.pillar-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pillar-filter-btn:hover {
+  background: var(--bg-sand-light);
+  color: var(--color-espresso);
+  border-color: var(--border-medium);
+}
+
+.pillar-filter-btn.active {
+  background: var(--color-espresso);
+  color: #FFFFFF;
+  border-color: var(--color-espresso);
+  box-shadow: 0 2px 8px rgba(35, 23, 17, 0.15);
+}
+
+.pillar-filter-btn .pillar-count {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.pillar-filter-btn.active .pillar-count {
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+/* Preset button for smart autofills */
+.spec-preset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.spec-preset-btn:hover {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+/* Sub-type badge */
+.sub-type-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+  text-transform: capitalize;
+}
+

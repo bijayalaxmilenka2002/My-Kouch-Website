@@ -34,11 +34,17 @@ export default function LuxuryImageCard({ product }) {
         <div className="luxury-image-card-scrim">
           <div className="luxury-image-card-content">
             {product.category && (
-              <span className="luxury-image-card-category">{product.category}</span>
+              <span className="luxury-image-card-category">
+                {product.category.toLowerCase().includes('mattress')
+                  ? 'MATTRESSES & BEDDINGS'
+                  : product.category.toLowerCase().includes('pillow') || product.category.toLowerCase().includes('cushion')
+                  ? 'PILLOWS & CUSHIONS'
+                  : product.category.toUpperCase()}
+              </span>
             )}
             <h3 className="luxury-image-card-title">{product.name}</h3>
             <span className="luxury-image-card-link">
-              <span>Explore Sofa</span>
+              <span>Explore Product</span>
               <ArrowRight size={15} />
             </span>
           </div>

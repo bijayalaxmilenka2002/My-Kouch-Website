@@ -7,8 +7,21 @@ import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
 export default function TopSellingSection({ products = [], loading = false }) {
   const sourceProducts = products && products.length > 0 ? products : FALLBACK_PRODUCTS;
-  const topSellers = sourceProducts.filter((p) => p.isTopSelling || p.rating >= 4.8);
-  const displayItems = topSellers.length > 0 ? topSellers : sourceProducts.slice(0, 8);
+
+  // Intermix top-selling sofas, mattresses, and pillows into a holistic home comfort showcase
+  const topSofas = sourceProducts.filter((p) => p.category?.includes('Sofa') && (p.isTopSelling || p.rating >= 4.8));
+  const topMattresses = sourceProducts.filter((p) => p.category === 'Mattress & Beddings');
+  const topCushions = sourceProducts.filter((p) => p.category === 'Pillow & Cushion');
+
+  const intermixed = [];
+  const maxLen = Math.max(topSofas.length, topMattresses.length, topCushions.length);
+  for (let i = 0; i < maxLen; i++) {
+    if (topSofas[i]) intermixed.push(topSofas[i]);
+    if (topMattresses[i]) intermixed.push(topMattresses[i]);
+    if (topCushions[i]) intermixed.push(topCushions[i]);
+  }
+
+  const displayItems = intermixed.length > 0 ? intermixed : sourceProducts.slice(0, 8);
 
   return (
     <section className="section-padding" style={{ background: '#FFFFFF' }}>
@@ -19,7 +32,7 @@ export default function TopSellingSection({ products = [], loading = false }) {
               <Sparkles size={14} />
               <span>Customer Favorites</span>
             </span>
-            <h2 className="section-title" style={{ marginBottom: 0 }}>Top Selling Sofas</h2>
+            <h2 className="section-title" style={{ marginBottom: 0 }}>Top Selling Products</h2>
           </div>
           <Link
             to="/collections?filter=top-selling"
@@ -34,9 +47,9 @@ export default function TopSellingSection({ products = [], loading = false }) {
           <AutoPlayCarousel
             products={displayItems}
             loading={loading && displayItems.length === 0}
-            emptyMessage="Loading top-selling sofa designs..."
+            emptyMessage="Loading top-selling home comfort designs..."
             intervalTime={3200}
-            ariaLabel="Top Selling Sofas Showcase"
+            ariaLabel="Top Selling Products Showcase"
           />
         </div>
       </div>

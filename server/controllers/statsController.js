@@ -13,6 +13,11 @@ export const getDashboardStats = async (req, res) => {
     const totalEnquiries = await Enquiry.countDocuments();
     const newEnquiries = await Enquiry.countDocuments({ status: 'New' });
 
+    // Category segregation stats
+    const sofasCount = await Product.countDocuments({ category: { $nin: ['Mattress & Beddings', 'Pillow & Cushion'] } });
+    const mattressesCount = await Product.countDocuments({ category: 'Mattress & Beddings' });
+    const pillowsCount = await Product.countDocuments({ category: 'Pillow & Cushion' });
+
     // Recent enquiries
     const recentEnquiries = await Enquiry.find().sort({ createdAt: -1 }).limit(5);
 
@@ -27,6 +32,9 @@ export const getDashboardStats = async (req, res) => {
         activeOffers,
         totalEnquiries,
         newEnquiries,
+        sofasCount,
+        mattressesCount,
+        pillowsCount,
       },
       recentEnquiries,
     });

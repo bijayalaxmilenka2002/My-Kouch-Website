@@ -34,6 +34,11 @@ export default function OwnerLoginPage() {
     }
   };
 
+  const savedCredsRaw = typeof window !== 'undefined' ? localStorage.getItem('mykouch_custom_owner_cred') : null;
+  const savedCreds = savedCredsRaw ? JSON.parse(savedCredsRaw) : null;
+  const displayEmail = savedCreds?.email || 'admin@mykouch.in';
+  const displayPassword = savedCreds?.password || 'MyKouch@2026';
+
   return (
     <div className="owner-login-page">
       <div className="owner-login-card">
@@ -47,7 +52,7 @@ export default function OwnerLoginPage() {
 
         <h1 className="owner-login-title">Owner Administration</h1>
         <p className="owner-login-subtitle">
-          Secure Portal to manage sofas, new arrivals, promotions, and customer enquiries.
+          Secure Portal to manage handcrafted sofas, orthopedic mattresses, pillows &amp; cushions, offers, and customer enquiries.
         </p>
 
         {/* Demo Credentials Box */}
@@ -56,8 +61,8 @@ export default function OwnerLoginPage() {
             <ShieldCheck size={16} color="var(--color-primary)" />
             <span>Authorized Owner Access</span>
           </div>
-          <div>Email: <code>admin@mykouch.in</code></div>
-          <div>Password: <code>MyKouch@2026</code></div>
+          <div>Email: <code>{displayEmail}</code></div>
+          <div>Password: <code>{displayPassword}</code></div>
         </div>
 
         {error && (
