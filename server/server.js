@@ -50,6 +50,10 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 
+// Serve frontend production build if dist folder exists
+const distPath = path.join(__dirname, '../client/dist');
+app.use(express.static(distPath));
+
 // Health Check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -57,6 +61,17 @@ app.get('/api/health', (req, res) => {
     brand: 'myKouch Luxury Sofas',
     database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString(),
+  });
+});
+
+// Single Page Application (SPA) routing fallback for client & owner portal
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    return next();
+  }
+  const indexPath = path.join(distPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) next();
   });
 });
 
