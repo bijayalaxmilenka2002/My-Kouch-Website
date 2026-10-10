@@ -576,7 +576,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Specifications Table Section */}
-        <div style={{ background: '#FFFFFF', padding: '2.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-subtle)', marginBottom: '5rem' }}>
+        <div className="product-specs-box">
           <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--color-espresso)', marginBottom: '1.5rem' }}>
             {specsTitle}
           </h2>

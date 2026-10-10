@@ -380,38 +380,30 @@ export default function CollectionsPage() {
             </button>
 
             {/* Search Box */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', background: 'var(--bg-sand-light)', padding: '0.5rem 1rem', borderRadius: 'var(--radius-sm)', flexGrow: 1, maxWidth: '380px' }}>
+            <div className="catalog-search-box">
               <Search size={18} color="var(--text-muted)" />
               <input
                 type="text"
                 placeholder={isSofaPillar ? "Search sofas by model or fabric..." : isBeddingPillar ? "Search mattresses by type..." : "Search pillows & cushions..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ border: 'none', background: 'transparent', padding: 0, width: '100%', fontSize: '0.9rem' }}
               />
               {searchTerm && (
-                <button onClick={() => setSearchTerm('')} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                <button onClick={() => setSearchTerm('')} className="catalog-search-clear">
                   <X size={16} />
                 </button>
               )}
             </div>
 
             {/* Sort By Dropdown */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0, whiteSpace: 'nowrap' }}>
-              <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            <div className="catalog-sort-box">
+              <span className="catalog-sort-label">
                 Sort By:
               </span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                style={{
-                  padding: '0.5rem 0.85rem',
-                  fontSize: '0.88rem',
-                  width: 'auto',
-                  minWidth: '190px',
-                  cursor: 'pointer',
-                  borderRadius: 'var(--radius-sm)',
-                }}
+                className="catalog-sort-select"
               >
                 <option value="newest">Featured &amp; Newest</option>
                 <option value="price_asc">Price: Low to High</option>

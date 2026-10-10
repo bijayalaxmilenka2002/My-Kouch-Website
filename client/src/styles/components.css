@@ -5218,4 +5218,642 @@
   }
 }
 
+/* ==========================================================================
+   MASTER FULL-RESPONSIVENESS SUITE (ALL VIEWPORTS & DEVICES)
+   Comprehensive audit & enhancement for iPhone, Android, Foldables, Tablets & Desktops
+   ========================================================================== */
+
+/* 1. Global Responsive Overflow Proofing & Mobile Enhancements */
+@media (max-width: 768px) {
+  .site-header {
+    width: 100vw;
+    max-width: 100%;
+  }
+
+  /* Prevent awkward wide text clipping */
+  h1, h2, h3, h4, .section-title {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Mobile Touch-friendly targets */
+  .btn,
+  .nav-link,
+  .mobile-nav-link,
+  .footer-link-item a,
+  .category-pill-btn,
+  .catalog-sort-select {
+    touch-action: manipulation;
+  }
+}
+
+/* 2. Top Header & Navbar Mobile Tuning (<= 480px and <= 380px) */
+@media (max-width: 480px) {
+  .site-header .nav-container {
+    height: 58px;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    gap: 0.4rem;
+  }
+
+  .nav-brand-box {
+    gap: 1px;
+  }
+
+  .nav-logo-mark {
+    height: 28px;
+  }
+
+  .nav-logo-tagline {
+    font-size: 0.4rem;
+    letter-spacing: 0.12em;
+    padding-left: 0.12em;
+  }
+
+  .btn-enquire-nav {
+    padding: 0 0.65rem;
+    height: 32px;
+    font-size: 0.72rem;
+    gap: 0.3rem;
+  }
+
+  .btn-enquire-nav svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .mobile-menu-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0.25rem;
+  }
+
+  .mobile-drawer {
+    width: min(88vw, 320px);
+    padding: 1.25rem 1.15rem;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 1.5rem));
+  }
+}
+
+@media (max-width: 380px) {
+  .site-header .nav-container {
+    height: 54px;
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+    gap: 0.3rem;
+  }
+
+  .nav-logo-mark {
+    height: 25px;
+  }
+
+  .nav-logo-tagline {
+    font-size: 0.36rem;
+    letter-spacing: 0.08em;
+  }
+
+  .btn-enquire-nav {
+    padding: 0 0.45rem;
+    height: 29px;
+    font-size: 0.68rem;
+    gap: 0.2rem;
+  }
+
+  .mobile-menu-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0.2rem;
+  }
+
+  .mobile-drawer {
+    width: min(92vw, 290px);
+    padding: 1.15rem 0.95rem;
+  }
+}
+
+/* 3. Hero Section Fluid Scaling */
+.hero-designer-title {
+  font-size: clamp(1.95rem, 5.2vw, 4.6rem);
+  line-height: 1.14;
+}
+
+@media (max-width: 640px) {
+  .hero-cover-section {
+    min-height: auto;
+    padding: 4.25rem 0 3.25rem;
+  }
+
+  .hero-pure-text-wrap {
+    padding: 0.75rem 0.25rem;
+  }
+
+  .hero-designer-title {
+    font-size: clamp(1.75rem, 6.2vw, 2.35rem);
+    line-height: 1.2;
+    margin-bottom: 0.85rem;
+  }
+
+  .hero-designer-title .designer-italic-highlight {
+    font-size: 0.95em;
+  }
+
+  .hero-designer-tag {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .hero-designer-desc {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin-bottom: 1.5rem;
+    padding: 0 0.25rem;
+    max-width: 100%;
+  }
+
+  .hero-designer-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .btn-designer-shop,
+  .btn-designer-outline {
+    width: 100%;
+    max-width: 330px;
+    padding: 0.85rem 1.25rem;
+    font-size: 0.92rem;
+    justify-content: center;
+  }
+
+  .hero-designer-badges {
+    flex-direction: column;
+    gap: 0.65rem;
+    width: 100%;
+  }
+
+  .hero-designer-badge {
+    font-size: 0.82rem;
+  }
+}
+
+/* 4. AutoPlay Carousel Touch & Mobile Snapping */
+.carousel-track-container {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+.carousel-slide {
+  scroll-snap-align: center;
+}
+
+@media (max-width: 1024px) {
+  .carousel-slide {
+    flex: 0 0 300px;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 640px) {
+  .carousel-slide {
+    flex: 0 0 min(82vw, 280px);
+    max-width: min(82vw, 280px);
+  }
+}
+
+@media (max-width: 380px) {
+  .carousel-slide {
+    flex: 0 0 min(85vw, 250px);
+    max-width: min(85vw, 250px);
+  }
+}
+
+/* 5. Flash Sale Offer Banner Responsive Perfecting */
+@media (max-width: 968px) {
+  .offer-flash-ribbon {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: clamp(1.75rem, 3.5vw, 2.5rem);
+    gap: 1.75rem;
+  }
+
+  .flash-left-block {
+    max-width: 100%;
+  }
+
+  .flash-collage-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 650px) {
+  .offer-flash-ribbon {
+    padding: 1.5rem 1rem;
+    border-radius: var(--radius-xl, 18px);
+    text-align: center;
+    align-items: center;
+  }
+
+  .flash-left-block {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.15rem;
+    width: 100%;
+  }
+
+  .flash-sale-lockup {
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  .flash-divider-line {
+    display: none;
+  }
+
+  .flash-word {
+    font-size: 2.05rem;
+  }
+
+  .sale-word {
+    font-size: 1.65rem;
+  }
+
+  .flash-copy-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .flash-headline {
+    font-size: 1.25rem;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .flash-subtext {
+    font-size: 0.82rem !important;
+    text-align: center;
+  }
+
+  .flash-coupon-row {
+    justify-content: center;
+    gap: 0.45rem;
+  }
+
+  .btn-flash-action {
+    align-self: center;
+    padding: 0.6rem 1.4rem;
+    font-size: 0.9rem;
+  }
+
+  .flash-collage-wrapper {
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .flash-frame-1 {
+    width: 82px;
+    height: 120px;
+  }
+
+  .flash-frame-4 {
+    width: 96px;
+    height: 125px;
+  }
+
+  .flash-frame-5 {
+    width: 82px;
+    height: 120px;
+  }
+
+  .flash-collage-frame.flash-frame-2,
+  .flash-collage-frame.flash-frame-3 {
+    display: none !important;
+  }
+}
+
+/* 6. Product Cards Grid System Across Mobile & Tablets */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 1.75rem;
+}
+
+@media (max-width: 968px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 580px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .product-card-actions {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+
+  .product-card-actions .btn {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.82rem;
+  }
+}
+
+/* 7. Collections & Catalog Page Controls & Sidebar */
+.catalog-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--bg-sand-light);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  flex-grow: 1;
+  max-width: 380px;
+  border: 1px solid var(--border-subtle);
+}
+
+.catalog-search-box input {
+  border: none;
+  background: transparent;
+  padding: 0;
+  width: 100%;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.catalog-search-clear {
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.catalog-sort-box {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.catalog-sort-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.catalog-sort-select {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.88rem;
+  width: auto;
+  min-width: 180px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: #FFFFFF;
+}
+
+@media (max-width: 640px) {
+  .catalog-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .catalog-mobile-filter-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .catalog-search-box {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .catalog-sort-box {
+    width: 100% !important;
+    justify-content: space-between;
+  }
+
+  .catalog-sort-select {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+/* 8. Product Detail Page Responsive Refinement */
+.product-specs-box {
+  background: #FFFFFF;
+  padding: clamp(1.25rem, 3.5vw, 2.5rem);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: clamp(2.5rem, 5vw, 5rem);
+  box-shadow: var(--shadow-xs);
+}
+
+@media (max-width: 640px) {
+  .product-detail-grid {
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .product-action-btns {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .product-action-btns .btn {
+    width: 100% !important;
+    padding: 0.85rem 1rem !important;
+    font-size: 0.95rem !important;
+    justify-content: center;
+  }
+}
+
+/* 9. About Page Transparent Comparison Table & Address Cards */
+.about-compare-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 1.5rem;
+  border-radius: var(--radius-md);
+}
+
+.about-compare-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+}
+
+.about-mobile-scroll-hint {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .about-mobile-scroll-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.85rem;
+    font-weight: 500;
+  }
+}
+
+.about-address-card {
+  background: #FFFFFF;
+  padding: clamp(1.35rem, 3.5vw, 2.5rem);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 10. Contact & Become Dealer Pages Responsive Cards */
+.contact-form-card {
+  background: #FFFFFF;
+  padding: clamp(1.35rem, 3.5vw, 2.5rem);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 600px) {
+  .dealer-form-container {
+    padding: 1.25rem 1rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .dealer-hero-card {
+    padding: 1.5rem 1rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .dealer-categories-banner {
+    padding: 1.5rem 1rem;
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* 11. Modals Full Responsive Polish (100dvh & Touch friendly) */
+@media (max-width: 600px) {
+  .modal-backdrop {
+    padding: 0.5rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-card {
+    max-height: calc(100dvh - 1rem);
+    max-height: calc(100vh - 1rem);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .modal-header {
+    flex-shrink: 0;
+    position: relative;
+    padding: 1rem 0.85rem 0.75rem;
+    text-align: center;
+  }
+
+  .modal-title {
+    font-size: 1.18rem;
+  }
+
+  .modal-subtitle {
+    font-size: 0.78rem;
+    max-width: 290px;
+  }
+
+  .modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 0.85rem 0.85rem 1.15rem;
+  }
+
+  .category-pill-selector {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .category-pill-btn {
+    padding: 0.55rem 0.65rem;
+    font-size: 0.8rem;
+  }
+
+  .modal-action-btns-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .modal-action-btns-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* 12. Footer VIP Strip & Multi-column Mobile Responsive */
+@media (max-width: 640px) {
+  .footer-vip-strip {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    align-items: center;
+  }
+
+  .footer-vip-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.65rem;
+  }
+
+  .footer-vip-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.85rem;
+  }
+
+  .footer-bottom-badges {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
 

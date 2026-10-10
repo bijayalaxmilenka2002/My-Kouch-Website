@@ -315,47 +315,52 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <table className="about-compare-table">
-            <thead>
-              <tr>
-                <th style={{ width: '28%' }}>Quality Standard</th>
-                <th className="mykouch-col" style={{ width: '36%' }}>myKouch Factory Direct</th>
-                <th style={{ width: '36%', color: 'var(--text-muted)' }}>Traditional Furniture Stores</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Frame Wood</strong></td>
-                <td className="mykouch-col">Seasoned solid Sal &amp; Marandi logs (termite treated)</td>
-                <td>Cheap MDF, composite plywood, or unseasoned pine</td>
-              </tr>
-              <tr>
-                <td><strong>Foam Quality</strong></td>
-                <td className="mykouch-col">40-Density High Resilience (HR) + Memory Foam</td>
-                <td>24-28 Density low-grade foam that sags in 1-2 years</td>
-              </tr>
-              <tr>
-                <td><strong>Pricing Structure</strong></td>
-                <td className="mykouch-col">100% Transparent direct factory pricing</td>
-                <td>40% to 60% distributor markups and retail commissions</td>
-              </tr>
-              <tr>
-                <td><strong>Customization</strong></td>
-                <td className="mykouch-col">Custom inch-by-inch dimensions &amp; 100+ fabrics</td>
-                <td>Rigid standard sizes; take it or leave it</td>
-              </tr>
-              <tr>
-                <td><strong>Warranty Protection</strong></td>
-                <td className="mykouch-col">10-Year Direct Factory Structural &amp; Sag Warranty</td>
-                <td>1-Year limited warranty with third-party hassle</td>
-              </tr>
-              <tr>
-                <td><strong>Delivery &amp; Setup</strong></td>
-                <td className="mykouch-col">White-glove delivery by in-house factory artisans</td>
-                <td>Third-party courier with DIY unboxing and assembly</td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="about-compare-table-wrapper">
+            <table className="about-compare-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '28%' }}>Quality Standard</th>
+                  <th className="mykouch-col" style={{ width: '36%' }}>myKouch Factory Direct</th>
+                  <th style={{ width: '36%', color: 'var(--text-muted)' }}>Traditional Furniture Stores</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Frame Wood</strong></td>
+                  <td className="mykouch-col">Seasoned solid Sal &amp; Marandi logs (termite treated)</td>
+                  <td>Cheap MDF, composite plywood, or unseasoned pine</td>
+                </tr>
+                <tr>
+                  <td><strong>Foam Quality</strong></td>
+                  <td className="mykouch-col">40-Density High Resilience (HR) + Memory Foam</td>
+                  <td>24-28 Density low-grade foam that sags in 1-2 years</td>
+                </tr>
+                <tr>
+                  <td><strong>Pricing Structure</strong></td>
+                  <td className="mykouch-col">100% Transparent direct factory pricing</td>
+                  <td>40% to 60% distributor markups and retail commissions</td>
+                </tr>
+                <tr>
+                  <td><strong>Customization</strong></td>
+                  <td className="mykouch-col">Custom inch-by-inch dimensions &amp; 100+ fabrics</td>
+                  <td>Rigid standard sizes; take it or leave it</td>
+                </tr>
+                <tr>
+                  <td><strong>Warranty Protection</strong></td>
+                  <td className="mykouch-col">10-Year Direct Factory Structural &amp; Sag Warranty</td>
+                  <td>1-Year limited warranty with third-party hassle</td>
+                </tr>
+                <tr>
+                  <td><strong>Delivery &amp; Setup</strong></td>
+                  <td className="mykouch-col">White-glove delivery by in-house factory artisans</td>
+                  <td>Third-party courier with DIY unboxing and assembly</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="about-mobile-scroll-hint">
+            <span>← Swipe horizontally to view full comparison →</span>
+          </div>
         </div>
 
         {/* 5. Factory & Showroom Locations in Bhubaneswar */}
@@ -375,7 +380,7 @@ export default function AboutPage() {
 
           <div className="about-addresses-grid">
             {/* Showroom Box */}
-            <div style={{ background: '#FFFFFF', padding: '2.5rem', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
+            <div className="about-address-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--color-primary)', fontWeight: 700, marginBottom: '0.75rem' }}>
                 <MapPin size={22} />
                 <span style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Experience Showroom</span>
@@ -403,7 +408,7 @@ export default function AboutPage() {
             </div>
 
             {/* Manufacturing Factory Box */}
-            <div style={{ background: '#FFFFFF', padding: '2.5rem', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
+            <div className="about-address-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--color-primary)', fontWeight: 700, marginBottom: '0.75rem' }}>
                 <MapPin size={22} />
                 <span style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Manufacturing Workshop</span>

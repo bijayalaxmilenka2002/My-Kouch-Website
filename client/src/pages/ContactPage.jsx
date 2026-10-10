@@ -75,7 +75,7 @@ export default function ContactPage() {
 
         <div className="contact-layout-grid">
           {/* Contact Form Card */}
-          <div style={{ background: '#FFFFFF', padding: '2.5rem', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="contact-form-card">
             <h2 style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', color: 'var(--color-espresso)', marginBottom: '0.5rem' }}>
               Send an Enquiry
             </h2>
