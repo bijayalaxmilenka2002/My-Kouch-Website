@@ -4134,7 +4134,7 @@
 
 .wakefit-card-img-wrap {
   width: 100%;
-  aspect-ratio: 4 / 3.8;
+  aspect-ratio: 16 / 11;
   position: relative;
   overflow: hidden;
   background: #F4EFEB;
@@ -4144,7 +4144,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 65%;
+  object-position: center 48%;
   display: block;
   transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -4339,6 +4339,12 @@
 }
 
 @media (max-width: 768px) {
+  .wakefit-arrivals-section {
+    padding: 3rem 0 2.5rem;
+  }
+  .wakefit-banner-bg-img {
+    display: none; /* Hide conflicting ghost backdrop on mobile screens */
+  }
   .wakefit-nav-arrow {
     display: none !important;
   }
@@ -4346,8 +4352,13 @@
 
 @media (max-width: 600px) {
   .wakefit-arrivals-banner {
-    padding: 1.5rem 1rem 1rem;
+    padding: 1.5rem 1rem 1.15rem;
     text-align: center;
+    border-radius: 20px;
+    margin-bottom: 1.25rem;
+  }
+  .wakefit-banner-bg-img {
+    display: none;
   }
   .wakefit-banner-content {
     text-align: center;
@@ -4356,43 +4367,141 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
   }
   .wakefit-title-wrap {
     justify-content: center;
     text-align: center;
+    margin-bottom: 0.35rem;
   }
   .wakefit-3d-letter,
   .wakefit-title-text {
-    font-size: 1.7rem;
+    font-size: clamp(1.6rem, 6.5vw, 2rem);
   }
   .wakefit-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     text-align: center;
-    margin: 0 auto;
+    margin: 0 auto 0.75rem;
+    max-width: 100%;
+    line-height: 1.45;
   }
+  /* Scrollable Category Filter Pills */
   .wakefit-capsule-nav-wrap {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-top: 0.4rem;
+    padding: 2px 2px 4px;
+  }
+  .wakefit-capsule-nav-wrap::-webkit-scrollbar {
+    display: none;
   }
   .wakefit-capsule-bar {
-    gap: 0.75rem;
-    padding: 0.4rem 0.75rem;
-    justify-content: center;
-    margin: 0.5rem auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Ensures All Products is never cut off on the left */
+    gap: 0.4rem;
+    padding: 0.3rem 0.55rem;
+    margin: 0;
+    width: max-content;
+    max-width: none;
+    box-shadow: 0 4px 14px rgba(45, 25, 15, 0.07);
+    border: 1px solid rgba(225, 210, 200, 0.75);
   }
   .wakefit-capsule-item {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    padding: 0.32rem 0.65rem;
     white-space: nowrap;
+    border-radius: var(--radius-full);
+  }
+  .wakefit-capsule-item.active {
+    background: #FFF1E6;
+    color: var(--color-primary, #C86228);
+    font-weight: 700;
+  }
+  .wakefit-capsule-item.active::after {
+    display: none;
+  }
+  /* Horizontal Sofa Cards Row */
+  .wakefit-cards-row {
+    padding: 0.5rem 0.5rem 1.25rem;
+    gap: 0.85rem;
+    scroll-padding-left: 0.5rem;
+    -webkit-overflow-scrolling: touch;
   }
   .wakefit-card {
-    flex: 0 0 85%;
-    min-width: 230px;
-    scroll-snap-align: center;
+    flex: 0 0 265px;
+    min-width: 235px;
+    max-width: 80vw;
+    scroll-snap-align: start;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(45, 25, 15, 0.08);
   }
-  .wakefit-cards-row {
-    padding: 0.5rem 0.25rem 1.25rem;
-    gap: 1rem;
+  .wakefit-card-img-wrap {
+    aspect-ratio: 16 / 11;
+  }
+  .wakefit-card-img {
+    object-position: center 48%;
+  }
+  .wakefit-card-tag {
+    top: 0.65rem;
+    left: 0.65rem;
+    padding: 0.22rem 0.6rem;
+    font-size: 0.68rem;
+  }
+  .wakefit-card-info {
+    padding: 0.85rem 0.95rem 1rem;
+  }
+  .wakefit-card-category {
+    font-size: 0.7rem;
+    margin-bottom: 0.25rem;
+  }
+  .wakefit-card-title {
+    font-size: 0.95rem;
+    line-height: 1.32;
+    margin-bottom: 0.4rem;
+    min-height: 2.64em;
+  }
+  .wakefit-card-rating {
+    margin-bottom: 0.5rem;
+    font-size: 0.72rem;
+    padding: 0.12rem 0.45rem;
+  }
+  .wakefit-card-price-row {
+    padding-top: 0.5rem;
+    margin-top: 0.45rem;
+    gap: 0.35rem 0.5rem;
+    flex-wrap: wrap;
+  }
+  .wakefit-card-price {
+    font-size: 1.08rem;
+  }
+  .wakefit-card-price-orig {
+    font-size: 0.82rem;
+  }
+  .wakefit-card-discount {
+    font-size: 0.76rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .wakefit-card {
+    flex: 0 0 235px;
+    min-width: 220px;
+    max-width: 86vw;
+  }
+  .wakefit-card-info {
+    padding: 0.75rem 0.85rem 0.9rem;
+  }
+  .wakefit-card-title {
+    font-size: 0.9rem;
+  }
+  .wakefit-card-price {
+    font-size: 1.02rem;
   }
 }
 

@@ -272,7 +272,7 @@ export default function NewArrivalsSection({ products = [], loading = false }) {
             {/* Right circular navigation arrow button (Matching the > in reference) */}
             <button
               type="button"
-              className="wakefit-nav-arrow btn-next"
+              className="wakefit-nav-arrow btn-next hide-mobile"
               onClick={() => handleScroll('next')}
               aria-label="Scroll right"
             >
