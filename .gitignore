@@ -40,3 +40,6 @@ Thumbs.db
 docs/extracted_rar/
 docs/pdf_pages/
 scripts/*.png
+scripts/audit_evidence/
+scripts/audit_results.json
+*.pdf
