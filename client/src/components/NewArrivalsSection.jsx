@@ -12,9 +12,9 @@ export default function NewArrivalsSection({ products = [], loading = false }) {
 
   // Filter products marked as isNewArrival
   const newArrivals = useMemo(() => {
-    const list = products && products.length > 0 ? products : FALLBACK_PRODUCTS;
+    const list = Array.isArray(products) && products.length > 0 ? products : (loading ? [] : FALLBACK_PRODUCTS);
     return list.filter((p) => p.isNewArrival === true && p.isActive !== false);
-  }, [products]);
+  }, [products, loading]);
 
   // Comprehensive home comfort category tabs
   const subCategoryTabs = [

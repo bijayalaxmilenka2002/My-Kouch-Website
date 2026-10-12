@@ -6,7 +6,7 @@ import AutoPlayCarousel from './AutoPlayCarousel';
 import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
 export default function TopSellingSection({ products = [], loading = false }) {
-  const sourceProducts = products && products.length > 0 ? products : FALLBACK_PRODUCTS;
+  const sourceProducts = Array.isArray(products) && products.length > 0 ? products : (loading ? [] : FALLBACK_PRODUCTS);
 
   // Intermix top-selling sofas, mattresses, and pillows into a holistic home comfort showcase
   const topSofas = sourceProducts.filter((p) => p.category?.includes('Sofa') && (p.isTopSelling || p.rating >= 4.8));

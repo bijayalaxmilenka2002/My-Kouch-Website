@@ -14,12 +14,13 @@ import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 import { FALLBACK_TESTIMONIALS } from '../data/fallbackTestimonials';
 
 export default function HomePage() {
-  const [products, setProducts] = useState(FALLBACK_PRODUCTS);
+  const [products, setProducts] = useState([]);
   const [activeOffer, setActiveOffer] = useState(null);
   const [testimonials, setTestimonials] = useState(FALLBACK_TESTIMONIALS);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     const loadHomeData = async () => {
       try {
         const [prodRes, offerRes, testRes] = await Promise.all([
@@ -28,45 +29,52 @@ export default function HomePage() {
           getTestimonials().catch(() => ({ testimonials: [] })),
         ]);
 
-        // 1. Resolve & Intelligently Merge Products
-        let baseProducts = (prodRes?.products && prodRes.products.length > 0) ? prodRes.products : FALLBACK_PRODUCTS;
-        try {
-          const localCustomRaw = localStorage.getItem('mykouch_custom_products');
-          if (localCustomRaw) {
-            const localCustom = JSON.parse(localCustomRaw);
-            if (Array.isArray(localCustom) && localCustom.length > 0) {
-              const localMap = new Map(localCustom.map((p) => [p._id, p]));
-              const merged = baseProducts.map((p) => localMap.get(p._id) || p);
-              const baseIds = new Set(baseProducts.map((p) => p._id));
-              localCustom.forEach((p) => {
-                if (!baseIds.has(p._id)) merged.unshift(p);
-              });
-              baseProducts = merged.filter((p) => p.isActive !== false);
-            }
-          }
-        } catch (e) {
-          // ignore
-        }
-        setProducts(baseProducts);
+        if (!isMounted) return;
 
-        // 2. Resolve & Intelligently Merge Promotional Offer
-        let resolvedOffer = offerRes?.offer || null;
-        try {
-          const localOffersRaw = localStorage.getItem('mykouch_custom_offers');
-          if (localOffersRaw) {
-            const localOffers = JSON.parse(localOffersRaw);
-            if (Array.isArray(localOffers) && localOffers.length > 0) {
-              const activeLocal = localOffers.find((o) => o.isActive !== false) || localOffers[0];
-              if (activeLocal) {
-                resolvedOffer = { ...(resolvedOffer || {}), ...activeLocal };
+        // 1. Resolve Products: Live Database is the Single Source of Truth
+        if (prodRes?.products && Array.isArray(prodRes.products) && prodRes.products.length > 0) {
+          const activeLive = prodRes.products.filter((p) => p.isActive !== false);
+          setProducts(activeLive);
+          try {
+            localStorage.setItem('mykouch_custom_products', JSON.stringify(prodRes.products));
+          } catch (e) {}
+        } else {
+          // Fallback only if server unreachable or cold starting
+          let fallbackList = FALLBACK_PRODUCTS.filter((p) => p.isActive !== false);
+          try {
+            const localCustomRaw = localStorage.getItem('mykouch_custom_products');
+            if (localCustomRaw) {
+              const localCustom = JSON.parse(localCustomRaw);
+              if (Array.isArray(localCustom) && localCustom.length > 0) {
+                fallbackList = localCustom.filter((p) => p.isActive !== false);
               }
             }
-          }
-        } catch (e) {
-          // ignore
+          } catch (e) {}
+          setProducts(fallbackList);
         }
-        if (resolvedOffer) {
-          setActiveOffer(resolvedOffer);
+
+        // 2. Resolve Promotional Offer: Live Database is Authoritative
+        if (offerRes && 'offer' in offerRes) {
+          setActiveOffer(offerRes.offer);
+          try {
+            if (offerRes.offer) {
+              localStorage.setItem('mykouch_custom_offers', JSON.stringify([offerRes.offer]));
+            } else {
+              localStorage.removeItem('mykouch_custom_offers');
+            }
+          } catch (e) {}
+        } else {
+          // Offline fallback
+          try {
+            const localOffersRaw = localStorage.getItem('mykouch_custom_offers');
+            if (localOffersRaw) {
+              const localOffers = JSON.parse(localOffersRaw);
+              if (Array.isArray(localOffers) && localOffers.length > 0) {
+                const activeLocal = localOffers.find((o) => o.isActive === true);
+                if (activeLocal) setActiveOffer(activeLocal);
+              }
+            }
+          } catch (e) {}
         }
 
         // 3. Resolve Testimonials

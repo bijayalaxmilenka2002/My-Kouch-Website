@@ -67,37 +67,34 @@ export default function CollectionsPage() {
     const fetchCollectionData = async () => {
       try {
         setLoading(true);
-        let baseList = FALLBACK_PRODUCTS;
+        let baseList = [];
 
         try {
           const apiParams = { isActive: 'true' };
           if (activeFilter === 'new-arrivals') apiParams.isNewArrival = 'true';
           if (activeFilter === 'top-selling') apiParams.isTopSelling = 'true';
           const res = await getProducts(apiParams);
-          if (res?.products && res.products.length > 0) {
-            baseList = res.products;
+          if (res?.products && Array.isArray(res.products) && res.products.length > 0) {
+            baseList = res.products.filter((p) => p.isActive !== false);
+            try {
+              localStorage.setItem('mykouch_custom_products', JSON.stringify(res.products));
+            } catch (e) {}
+          } else {
+            baseList = FALLBACK_PRODUCTS;
           }
         } catch (e) {
-          baseList = FALLBACK_PRODUCTS;
-        }
-
-        // Merge any products added/edited in owner portal with backend products
-        try {
-          const localCustomRaw = localStorage.getItem('mykouch_custom_products');
-          if (localCustomRaw) {
-            const localCustom = JSON.parse(localCustomRaw);
-            if (Array.isArray(localCustom) && localCustom.length > 0) {
-              const localMap = new Map(localCustom.map((p) => [p._id, p]));
-              const merged = baseList.map((p) => localMap.get(p._id) || p);
-              const baseIds = new Set(baseList.map((p) => p._id));
-              localCustom.forEach((p) => {
-                if (!baseIds.has(p._id)) merged.unshift(p);
-              });
-              baseList = merged.filter((p) => p.isActive !== false);
+          // Offline fallback
+          let fallback = FALLBACK_PRODUCTS;
+          try {
+            const localCustomRaw = localStorage.getItem('mykouch_custom_products');
+            if (localCustomRaw) {
+              const localCustom = JSON.parse(localCustomRaw);
+              if (Array.isArray(localCustom) && localCustom.length > 0) {
+                fallback = localCustom.filter((p) => p.isActive !== false);
+              }
             }
-          }
-        } catch (e) {
-          // ignore
+          } catch (err) {}
+          baseList = fallback;
         }
 
         let filtered = [];
