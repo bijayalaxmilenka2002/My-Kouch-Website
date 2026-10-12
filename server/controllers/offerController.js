@@ -24,14 +24,9 @@ export const getActiveOffers = async (req, res) => {
       offer = await Offer.findOne({ isActive: true }).sort({ updatedAt: -1, createdAt: -1 });
     }
 
-    // Ultimate fallback: newest offer in database
-    if (!offer) {
-      offer = await Offer.findOne().sort({ updatedAt: -1, createdAt: -1 });
-    }
-
     return res.status(200).json({
       success: true,
-      offer,
+      offer: offer || null,
     });
   } catch (error) {
     return res.status(500).json({

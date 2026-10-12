@@ -172,33 +172,32 @@ export default function OwnerDashboardPage() {
     try {
       setLoading(true);
 
-      // 1. Fetch remote data in parallel
+      // 1. Fetch remote data in parallel with all active and inactive products
       const [statsRes, prodRes, offerRes, enqRes] = await Promise.all([
         getDashboardStats(token).catch(() => ({ stats: null })),
-        getProducts({ isActive: undefined }).catch(() => ({ products: [] })),
+        getProducts({ isActive: 'all' }).catch(() => ({ products: [] })),
         getAllOffers(token).catch(() => ({ offers: [] })),
         getAllEnquiries(token).catch(() => ({ enquiries: [], counts: {} })),
       ]);
 
-      // 2. Resolve Products with robust database synchronization
-      let resolvedProducts = (prodRes?.products && prodRes.products.length > 0) ? prodRes.products : FALLBACK_PRODUCTS;
-
-      // Check locally cached / user-added products in localStorage and merge cleanly
-      try {
-        const localCustomRaw = localStorage.getItem('mykouch_custom_products');
-        if (localCustomRaw) {
-          const localCustom = JSON.parse(localCustomRaw);
-          if (Array.isArray(localCustom) && localCustom.length > 0) {
-            const baseMap = new Map(resolvedProducts.map((p) => [p._id, p]));
-            localCustom.forEach((lp) => {
-              if (lp._id && !baseMap.has(lp._id)) {
-                resolvedProducts.push(lp);
-              }
-            });
+      // 2. Resolve Products: Database is source of truth
+      let resolvedProducts = [];
+      if (prodRes?.products && prodRes.products.length > 0) {
+        resolvedProducts = prodRes.products;
+      } else {
+        // Fallback to local storage if API is temporarily unavailable
+        try {
+          const localCustomRaw = localStorage.getItem('mykouch_custom_products');
+          if (localCustomRaw) {
+            const localCustom = JSON.parse(localCustomRaw);
+            if (Array.isArray(localCustom) && localCustom.length > 0) {
+              resolvedProducts = localCustom;
+            }
           }
+        } catch (e) {}
+        if (resolvedProducts.length === 0) {
+          resolvedProducts = FALLBACK_PRODUCTS;
         }
-      } catch (e) {
-        // ignore
       }
       setProducts(resolvedProducts);
       try {
@@ -206,8 +205,10 @@ export default function OwnerDashboardPage() {
       } catch (e) {}
 
       // 3. Resolve Offers: Database is primary source of truth
-      let resolvedOffers = (offerRes?.offers && offerRes.offers.length > 0) ? offerRes.offers : [];
-      if (resolvedOffers.length === 0) {
+      let resolvedOffers = [];
+      if (offerRes?.offers && Array.isArray(offerRes.offers)) {
+        resolvedOffers = offerRes.offers;
+      } else {
         try {
           const localOffersRaw = localStorage.getItem('mykouch_custom_offers');
           if (localOffersRaw) {
@@ -216,25 +217,7 @@ export default function OwnerDashboardPage() {
               resolvedOffers = localOffers;
             }
           }
-        } catch (e) {
-          // ignore
-        }
-      }
-      if (resolvedOffers.length === 0) {
-        resolvedOffers = [
-          {
-            _id: 'off_01',
-            title: 'Festive Home Comfort Fest',
-            subtitle: 'Factory-Direct Sofas & Orthopedic Mattresses',
-            description: 'Save up to 35% on handcrafted sofas, luxury beddings, and memory contour pillows made in Bhubaneswar.',
-            discount: 'UP TO 35% OFF',
-            couponCode: 'COMFORT35',
-            image: '/assets/sofas/drawing_room_1_2.jpg',
-            ctaText: 'Explore Collections',
-            ctaLink: '/collections',
-            isActive: true,
-          },
-        ];
+        } catch (e) {}
       }
       setOffers(resolvedOffers);
       try {
@@ -676,9 +659,14 @@ export default function OwnerDashboardPage() {
   const handleToggleProductState = async (id, field, currentValue) => {
     try {
       const updatedValue = !currentValue;
+      const targetProd = products.find((p) => p._id === id);
       let savedProduct = null;
       try {
-        const apiRes = await updateProduct(id, { [field]: updatedValue }, token);
+        const payload = {
+          [field]: updatedValue,
+          ...(targetProd ? { name: targetProd.name, slug: targetProd.slug } : {})
+        };
+        const apiRes = await updateProduct(id, payload, token);
         if (apiRes?.product) savedProduct = apiRes.product;
       } catch (apiErr) {
         console.warn('API toggle bypassed for local persistence:', apiErr.message);
@@ -791,11 +779,15 @@ export default function OwnerDashboardPage() {
   const handleToggleOfferActive = async (off) => {
     try {
       const updatedActive = !off.isActive;
+      let savedOffer = null;
       try {
-        await updateOffer(off._id, { isActive: updatedActive }, token);
-      } catch (e) {}
+        const res = await updateOffer(off._id, { isActive: updatedActive }, token);
+        if (res?.offer) savedOffer = res.offer;
+      } catch (e) {
+        console.warn('Backend updateOffer bypassed:', e.message);
+      }
       const updated = offers.map((o) =>
-        o._id === off._id ? { ...o, isActive: updatedActive } : (updatedActive ? { ...o, isActive: false } : o)
+        o._id === off._id ? (savedOffer || { ...o, isActive: updatedActive }) : (updatedActive ? { ...o, isActive: false } : o)
       );
       setOffers(updated);
       localStorage.setItem('mykouch_custom_offers', JSON.stringify(updated));
@@ -1219,8 +1211,8 @@ export default function OwnerDashboardPage() {
               </div>
             </div>
 
-            {/* Products Table */}
-            <div className="dashboard-table-card">
+            {/* Products Table on Desktop */}
+            <div className="dashboard-table-card desktop-only">
               <table className="dashboard-table">
                 <thead>
                   <tr>
@@ -1366,6 +1358,127 @@ export default function OwnerDashboardPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Products Mobile Card View on Mobile & Tablet (<= 768px) */}
+            <div className="dashboard-mobile-cards">
+              {filteredProducts.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2.5rem', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)' }}>
+                  No products match the selected filters or search keyword.
+                </div>
+              ) : (
+                filteredProducts.map((prod) => {
+                  const isMattress = prod.category === 'Mattress & Beddings';
+                  const isPillow = prod.category === 'Pillow & Cushion';
+
+                  return (
+                    <div key={`m-${prod._id || prod.slug}`} className="dashboard-mobile-card">
+                      <div className="d-mobile-card-header">
+                        <img
+                          src={getImageUrl(prod.images?.[0])}
+                          alt=""
+                          className="d-mobile-card-thumb"
+                          onError={(e) => {
+                            if (!e.target.dataset.failed) {
+                              e.target.dataset.failed = 'true';
+                              e.target.src = '/assets/sofas/drawing_room_1_2.jpg';
+                            }
+                          }}
+                        />
+                        <div className="d-mobile-card-info">
+                          <strong className="d-mobile-card-title">{prod.name}</strong>
+                          <div className="d-mobile-card-meta">
+                            <span
+                              className="table-badge"
+                              style={{
+                                background: isMattress ? '#E0F2FE' : isPillow ? '#DCFCE7' : 'var(--bg-sand)',
+                                color: isMattress ? '#0369A1' : isPillow ? '#15803D' : 'var(--color-espresso)',
+                              }}
+                            >
+                              {prod.category}
+                            </span>
+                            <span className="d-mobile-card-price">{formatPrice(prod.price)}</span>
+                          </div>
+                          {(prod.dimensions || prod.seatingCapacity) && (
+                            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                              {prod.dimensions || prod.seatingCapacity}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Prominent Mobile Toggle Bar */}
+                      <div className="d-mobile-card-toggles">
+                        <div className="d-mobile-toggle-col">
+                          <span>New Arrival</span>
+                          <label className="toggle-switch">
+                            <input
+                              type="checkbox"
+                              checked={prod.isNewArrival}
+                              onChange={() => handleToggleProductState(prod._id, 'isNewArrival', prod.isNewArrival)}
+                            />
+                            <span className="toggle-slider"></span>
+                          </label>
+                        </div>
+
+                        <div className="d-mobile-toggle-col">
+                          <span>Top Seller</span>
+                          <label className="toggle-switch">
+                            <input
+                              type="checkbox"
+                              checked={prod.isTopSelling}
+                              onChange={() => handleToggleProductState(prod._id, 'isTopSelling', prod.isTopSelling)}
+                            />
+                            <span className="toggle-slider"></span>
+                          </label>
+                        </div>
+
+                        <div className="d-mobile-toggle-col">
+                          <span>Active (Live)</span>
+                          <label className="toggle-switch">
+                            <input
+                              type="checkbox"
+                              checked={prod.isActive}
+                              onChange={() => handleToggleProductState(prod._id, 'isActive', prod.isActive)}
+                            />
+                            <span className="toggle-slider"></span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Card Action Buttons */}
+                      <div className="d-mobile-card-actions">
+                        <Link
+                          to={`/product/${prod._id || prod.slug}`}
+                          target="_blank"
+                          className="btn btn-light btn-sm"
+                          title="View on website"
+                        >
+                          <Eye size={14} />
+                          <span>View</span>
+                        </Link>
+                        <button
+                          onClick={() => handleOpenEditProduct(prod)}
+                          className="btn btn-light btn-sm"
+                          title="Edit Product Details"
+                        >
+                          <Edit size={14} />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(prod._id, prod.name)}
+                          className="btn btn-outline btn-sm"
+                          style={{ color: 'var(--color-danger)', borderColor: '#FCA5A5' }}
+                          title="Delete Product"
+                        >
+                          <Trash2 size={14} />
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         )}
 
@@ -1382,7 +1495,8 @@ export default function OwnerDashboardPage() {
               </button>
             </div>
 
-            <div className="dashboard-table-card">
+            {/* Offers Table on Desktop */}
+            <div className="dashboard-table-card desktop-only">
               <table className="dashboard-table">
                 <thead>
                   <tr>
@@ -1447,6 +1561,65 @@ export default function OwnerDashboardPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Offers Mobile Cards (<= 768px) */}
+            <div className="dashboard-mobile-cards">
+              {offers.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2.5rem', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)' }}>
+                  No promotional offers configured. Click "Create New Offer" to publish one.
+                </div>
+              ) : (
+                offers.map((off) => (
+                  <div key={`m-off-${off._id}`} className="d-mobile-offer-card">
+                    <div>
+                      <strong style={{ fontSize: '1rem', color: 'var(--color-espresso)', display: 'block', marginBottom: '0.35rem' }}>
+                        {off.title}
+                      </strong>
+                      <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginBottom: '0.65rem', lineHeight: 1.45 }}>
+                        {off.description}
+                      </p>
+                      <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <span style={{ color: 'var(--color-primary)', fontWeight: 800, fontSize: '0.95rem' }}>{off.discount}</span>
+                        {off.couponCode && (
+                          <code style={{ background: 'var(--bg-sand)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 700, fontSize: '0.82rem' }}>
+                            {off.couponCode}
+                          </code>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-subtle)' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleOfferActive(off)}
+                        className={`table-badge ${off.isActive ? 'badge-status-completed' : 'badge-status-new'}`}
+                        style={{ cursor: 'pointer', border: 'none', background: off.isActive ? '#DCFCE7' : '#F3F4F6', padding: '0.45rem 0.85rem', fontSize: '0.82rem' }}
+                        title="Click to toggle Live or Draft"
+                      >
+                        {off.isActive ? '● Live on Website' : '○ Draft / Inactive'}
+                      </button>
+
+                      <div className="table-action-group">
+                        <button
+                          onClick={() => handleOpenEditOffer(off)}
+                          className="btn-icon-table"
+                          title="Edit Offer"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteOffer(off._id, off.title)}
+                          className="btn-icon-table delete"
+                          title="Delete Offer"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}

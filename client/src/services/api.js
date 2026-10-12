@@ -1,6 +1,34 @@
-const API_BASE = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, '')}/api` 
-  : '/api';
+// Dynamic API Base Resolution:
+// 1. Explicit VITE_API_URL if configured
+// 2. Relative '/api' for local dev server proxy (localhost / 127.0.0.1)
+// 3. Fallback directly to live Render backend for production hosting (mykouch.com on Hostinger)
+const resolveApiBase = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return `${import.meta.env.VITE_API_URL.replace(/\/+$/, '')}/api`;
+  }
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return '/api';
+    }
+  }
+  return 'https://mykouch-backend.onrender.com/api';
+};
+
+const resolveBackendOrigin = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return '';
+    }
+  }
+  return 'https://mykouch-backend.onrender.com';
+};
+
+const API_BASE = resolveApiBase();
 
 /**
  * Resolves sofa image path across both local assets and remote/local uploads
@@ -12,10 +40,8 @@ export const getImageUrl = (imgPath) => {
     return imgPath;
   }
   if (imgPath.startsWith('/uploads')) {
-    const backendUrl = import.meta.env.VITE_API_URL 
-      ? import.meta.env.VITE_API_URL.replace(/\/+$/, '') 
-      : '';
-    return backendUrl ? `${backendUrl}${imgPath}` : imgPath;
+    const origin = resolveBackendOrigin();
+    return origin ? `${origin}${imgPath}` : imgPath;
   }
   return imgPath;
 };

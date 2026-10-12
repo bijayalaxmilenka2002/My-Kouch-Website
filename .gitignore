@@ -39,3 +39,4 @@ Thumbs.db
 *.zip
 docs/extracted_rar/
 docs/pdf_pages/
+scripts/*.png

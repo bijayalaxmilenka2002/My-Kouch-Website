@@ -31,9 +31,11 @@ export const getProducts = async (req, res) => {
 
     const query = {};
 
-    // By default, public only sees active products, unless owner queries specifically
-    if (isActive !== undefined) {
-      query.isActive = isActive === 'true';
+    // By default, public only sees active products; owner portal can query 'all' or explicit boolean
+    if (isActive === 'all' || isActive === 'any') {
+      // Return both active and inactive products
+    } else if (isActive !== undefined) {
+      query.isActive = isActive === 'true' || isActive === true;
     } else {
       query.isActive = true;
     }
@@ -276,12 +278,28 @@ export const updateProduct = async (req, res) => {
 
     if (mongoose.Types.ObjectId.isValid(id)) {
       product = await Product.findById(id);
-    } else {
+    }
+    if (!product) {
       product = await Product.findOne({ slug: id });
     }
-
-    if (!product && req.body.name) {
+    if (!product && req.body?.slug) {
+      product = await Product.findOne({ slug: req.body.slug });
+    }
+    if (!product && req.body?.name) {
       product = await Product.findOne({ name: req.body.name });
+    }
+    if (!product && typeof id === 'string' && id.startsWith('fb-sofa-')) {
+      // Handle fallback ID lookups by regex index if applicable
+      const indexMap = {
+        'fb-sofa-1': 'myKouch Royal Emerald Velvet L-Shape Sectional',
+        'fb-sofa-2': 'myKouch Tuscany Quilted L-Shaped Corner Sofa',
+        'fb-sofa-3': 'myKouch Celestia Sky Blue Sectional with Ottoman',
+        'fb-sofa-4': 'myKouch Royal Chesterfield Charcoal Living Suite',
+        'fb-sofa-5': 'myKouch Sovereign Velvet Heritage 3+1+1 Combo',
+      };
+      if (indexMap[id]) {
+        product = await Product.findOne({ name: indexMap[id] });
+      }
     }
 
     const updateData = { ...req.body };
