@@ -41,7 +41,13 @@ export default function ProductCard({ product }) {
               }
               if (!e.target.dataset.failed) {
                 e.target.dataset.failed = 'true';
-                e.target.src = '/assets/sofas/drawing_room_1_2.jpg';
+                if (product.category === 'Pillow & Cushion' || (product.name && product.name.toLowerCase().includes('pillow'))) {
+                  e.target.src = '/assets/pillows/hotel_luxury_cloud_sleeping_pillow_stack.jpg';
+                } else if (product.category === 'Mattress & Beddings' || (product.name && product.name.toLowerCase().includes('mattress'))) {
+                  e.target.src = '/assets/mattresses/tufted_orthopedic_hybrid_mattress.jpg';
+                } else {
+                  e.target.src = '/assets/sofas/drawing_room_1_2.jpg';
+                }
               }
             }}
           />
