@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import LuxuryImageCard from './LuxuryImageCard';
 
@@ -6,141 +6,152 @@ export default function AutoPlayCarousel({
   products = [],
   loading = false,
   emptyMessage = 'Loading handcrafted sofa designs...',
-  ariaLabel = 'Continuous Sofa Carousel',
+  intervalTime = 3200,
+  ariaLabel = 'Top Selling Products Carousel',
 }) {
-  // Ensure every single item has a 100% unique image (no repeated images anywhere)
+  const containerRef = useRef(null);
+  const isPausedRef = useRef(false);
+  const isAutoScrollingRef = useRef(false);
+  const timerRef = useRef(null);
+  const resumeTimeoutRef = useRef(null);
+
+  // Ensure every item has a unique image/id
   const uniqueList = useMemo(() => {
     if (!products || products.length === 0) return [];
-    const seenImages = new Set();
+    const seen = new Set();
     const result = [];
 
     for (const p of products) {
-      const imgKey = p.images && p.images[0] ? p.images[0] : p._id;
-      if (!seenImages.has(imgKey)) {
-        seenImages.add(imgKey);
+      const key = p.images && p.images[0] ? p.images[0] : (p._id || p.slug);
+      if (!seen.has(key)) {
+        seen.add(key);
         result.push(p);
       }
     }
     return result;
   }, [products]);
 
-  const containerRef = useRef(null);
-  const accumulatedScroll = useRef(0);
-  const isPausedRef = useRef(false);
-  const userInteractingRef = useRef(false);
-  const resumeTimeoutRef = useRef(null);
-
-  // Smooth continuous autoplay via requestAnimationFrame
-  useEffect(() => {
+  // Smooth slide step forward
+  const advanceSlide = useCallback(() => {
     const container = containerRef.current;
-    if (!container || uniqueList.length === 0) return;
+    if (!container || isPausedRef.current) return;
 
-    let animId;
-    const speed = 0.8; // Smooth luxury drift speed (pixels per frame)
+    const slide = container.querySelector('.carousel-slide');
+    const step = slide ? slide.offsetWidth + 24 : 364;
+    const maxScroll = container.scrollWidth - container.clientWidth;
 
-    const step = () => {
-      if (!isPausedRef.current && !userInteractingRef.current) {
-        accumulatedScroll.current += speed;
+    if (maxScroll <= 10) return; // All cards fit in viewport
 
-        const maxScroll = container.scrollWidth - container.clientWidth;
+    isAutoScrollingRef.current = true;
+    setTimeout(() => {
+      isAutoScrollingRef.current = false;
+    }, 700);
 
-        if (maxScroll > 5) {
-          // When reaching the end of the unique list, loop back seamlessly to start
-          if (accumulatedScroll.current >= maxScroll) {
-            accumulatedScroll.current = 0;
-            container.scrollLeft = 0;
-          } else {
-            container.scrollLeft = accumulatedScroll.current;
-          }
-        }
-      }
-      animId = requestAnimationFrame(step);
-    };
+    if (container.scrollLeft >= maxScroll - 25) {
+      container.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: step, behavior: 'smooth' });
+    }
+  }, []);
 
-    animId = requestAnimationFrame(step);
+  // Timer controls
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      advanceSlide();
+    }, intervalTime);
+  }, [advanceSlide, intervalTime]);
+
+  const pauseTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  // Start autoplay on mount / when products load
+  useEffect(() => {
+    if (uniqueList.length <= 1) return;
+
+    isPausedRef.current = false;
+    startTimer();
 
     return () => {
-      cancelAnimationFrame(animId);
+      pauseTimer();
       if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
     };
-  }, [uniqueList]);
+  }, [uniqueList, startTimer, pauseTimer]);
 
-  // Pause when browser tab is hidden
+  // Pause when browser tab is hidden to save battery & prevent queueing
   useEffect(() => {
     const handleVisibility = () => {
       if (document.hidden) {
         isPausedRef.current = true;
+        pauseTimer();
       } else {
         isPausedRef.current = false;
+        startTimer();
       }
     };
     document.addEventListener('visibilitychange', handleVisibility);
     return () => document.removeEventListener('visibilitychange', handleVisibility);
-  }, []);
+  }, [startTimer, pauseTimer]);
 
-  // Sync scroll position on manual user scroll
+  // Temporarily pause on manual touch / scroll and resume after pause
+  const handleUserActivity = () => {
+    isPausedRef.current = true;
+    pauseTimer();
+
+    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
+    resumeTimeoutRef.current = setTimeout(() => {
+      isPausedRef.current = false;
+      startTimer();
+    }, 2800);
+  };
+
   const handleScroll = () => {
-    if (userInteractingRef.current && containerRef.current) {
-      accumulatedScroll.current = containerRef.current.scrollLeft;
+    if (!isAutoScrollingRef.current) {
+      handleUserActivity();
     }
   };
 
   const handleMouseEnter = () => {
     isPausedRef.current = true;
+    pauseTimer();
   };
 
   const handleMouseLeave = () => {
     isPausedRef.current = false;
-    if (containerRef.current) {
-      accumulatedScroll.current = containerRef.current.scrollLeft;
-    }
+    startTimer();
   };
 
-  const handleTouchStart = () => {
-    isPausedRef.current = true;
-    userInteractingRef.current = true;
-  };
-
-  const handleTouchEnd = () => {
-    userInteractingRef.current = false;
-    if (containerRef.current) {
-      accumulatedScroll.current = containerRef.current.scrollLeft;
-    }
-    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
-    resumeTimeoutRef.current = setTimeout(() => {
-      isPausedRef.current = false;
-    }, 1200);
-  };
-
-  // Next Button: Smooth step forward
   const handleNext = () => {
-    if (!containerRef.current) return;
-    const slide = containerRef.current.querySelector('.carousel-slide');
+    handleUserActivity();
+    const container = containerRef.current;
+    if (!container) return;
+    const slide = container.querySelector('.carousel-slide');
     const step = slide ? slide.offsetWidth + 24 : 364;
+    const maxScroll = container.scrollWidth - container.clientWidth;
 
-    const maxScroll = containerRef.current.scrollWidth - containerRef.current.clientWidth;
-    if (containerRef.current.scrollLeft >= maxScroll - 5) {
-      containerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-      accumulatedScroll.current = 0;
+    if (container.scrollLeft >= maxScroll - 25) {
+      container.scrollTo({ left: 0, behavior: 'smooth' });
     } else {
-      containerRef.current.scrollBy({ left: step, behavior: 'smooth' });
-      accumulatedScroll.current = containerRef.current.scrollLeft + step;
+      container.scrollBy({ left: step, behavior: 'smooth' });
     }
   };
 
-  // Prev Button: Smooth step backward
   const handlePrev = () => {
-    if (!containerRef.current) return;
-    const slide = containerRef.current.querySelector('.carousel-slide');
+    handleUserActivity();
+    const container = containerRef.current;
+    if (!container) return;
+    const slide = container.querySelector('.carousel-slide');
     const step = slide ? slide.offsetWidth + 24 : 364;
 
-    if (containerRef.current.scrollLeft <= 5) {
-      const maxScroll = containerRef.current.scrollWidth - containerRef.current.clientWidth;
-      containerRef.current.scrollTo({ left: maxScroll, behavior: 'smooth' });
-      accumulatedScroll.current = maxScroll;
+    if (container.scrollLeft <= 25) {
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      container.scrollTo({ left: maxScroll, behavior: 'smooth' });
     } else {
-      containerRef.current.scrollBy({ left: -step, behavior: 'smooth' });
-      accumulatedScroll.current = containerRef.current.scrollLeft - step;
+      container.scrollBy({ left: -step, behavior: 'smooth' });
     }
   };
 
@@ -173,15 +184,17 @@ export default function AutoPlayCarousel({
       className="autoplay-carousel-container"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      onTouchStart={handleUserActivity}
+      onTouchEnd={handleUserActivity}
+      onWheel={handleUserActivity}
       aria-label={ariaLabel}
     >
       <div className="carousel-wrapper">
         <button
+          type="button"
           onClick={handlePrev}
           className="carousel-nav-btn prev"
-          aria-label="Previous Sofa"
+          aria-label="Previous Slide"
         >
           <ChevronLeft size={22} />
         </button>
@@ -204,9 +217,10 @@ export default function AutoPlayCarousel({
         </div>
 
         <button
+          type="button"
           onClick={handleNext}
           className="carousel-nav-btn next"
-          aria-label="Next Sofa"
+          aria-label="Next Slide"
         >
           <ChevronRight size={22} />
         </button>
