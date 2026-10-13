@@ -236,14 +236,7 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links (Uncluttered Primary Pillars) */}
           <ul className="nav-links">
-            {/* 1. Home */}
-            <li>
-              <Link to="/" className={`nav-link ${isHomeActive ? 'active' : ''}`}>
-                Home
-              </Link>
-            </li>
-
-            {/* 2. All Sofas Dropdown (L-Shape, Combos, Recliners, 3-Seater, All Sofas) */}
+            {/* 1. All Sofas Dropdown (L-Shape, Combos, Recliners, 3-Seater, All Sofas) */}
             <li
               className="nav-item-dropdown"
               ref={sofaRef}
@@ -618,23 +611,25 @@ export default function Navbar() {
               </Link>
             </li>
 
-            {/* 7. About Us */}
+            {/* 6. About Us */}
             <li>
               <Link
                 to="/about"
                 className={`nav-link ${isAboutActive ? 'active' : ''}`}
               >
-                About Us
+                <span className="nav-text-full">About Us</span>
+                <span className="nav-text-short">About</span>
               </Link>
             </li>
 
-            {/* 8. Contact Us */}
+            {/* 7. Contact Us */}
             <li>
               <Link
                 to="/contact"
                 className={`nav-link ${isContactActive ? 'active' : ''}`}
               >
-                Contact Us
+                <span className="nav-text-full">Contact Us</span>
+                <span className="nav-text-short">Contact</span>
               </Link>
             </li>
           </ul>
